@@ -160,6 +160,7 @@ public class Meal {
         return totalCholesterol;
     }
 
+
     public String toString(){
         String mealArr = "[";
         for(int i = 0; i < items.size(); i++){

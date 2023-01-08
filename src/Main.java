@@ -148,11 +148,15 @@ public class Main extends JComponent implements Runnable{
                 preferencesScreen.add(cholesterolGoal);
                 preferencesScreen.add(cholesterolGoalField);
 
+            }else if(e.getSource() instanceof JButton && mealScreen.isVisible()){
+                if(((JButton) e.getSource()).getText().equals("More nutrition info")){
+                    if(((JButton) e.getSource()).getParent() instanceof ItemPanel) {
+                        NutritionWindow nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item);
+
+                    }
+                }
             }
 
-            if(e.getSource() instanceof ItemPanel){
-                System.out.println(((ItemPanel) e.getSource()).item.calories);
-            }
 
 
         }
@@ -1026,8 +1030,8 @@ public class Main extends JComponent implements Runnable{
         mealScreen = new JPanel();
         mealScreen.setLayout(new FlowLayout());
         mealScreen.setSize(500,1300);
-        itemPanelArr = new ArrayList<ItemPanel>();
-
+        itemLabels = new ArrayList<>();
+        itemPanelArr = new ArrayList<>();
         backButton = new JButton("<-");
         mealHeader = new JLabel(new String[]{"Breakfast","Lunch","Dinner"}[mealNumber-1]);
         EntreeHeader = new JLabel("Entrees");
@@ -1043,10 +1047,10 @@ public class Main extends JComponent implements Runnable{
         drinksPanel = new JPanel(new BorderLayout());
         desertsPanel = new JPanel(new BorderLayout());
         itemListPanel = new JPanel();
-        totalMealCalories = new JLabel("Total calories:    123");
-        totalMealCarbs = new JLabel("Carbs:      32g");
-        totalMealFat = new JLabel("Fat:     32g");
-        totalMealProtein = new JLabel("Protein:      12g");
+        totalMealCalories = new JLabel("Total calories:   "+user.meals[mealNumber-1].getCalories());
+        totalMealCarbs = new JLabel("Carbs:     "+user.meals[mealNumber-1].getCarbs());
+        totalMealFat = new JLabel("Fat:    "+user.meals[mealNumber-1].getFat());
+        totalMealProtein = new JLabel("Protein:     "+user.meals[mealNumber-1].getProtein());
         moreNutrition = new JButton("More nutrition info...");
 
 
@@ -1126,16 +1130,16 @@ public class Main extends JComponent implements Runnable{
         ArrayList<ItemPanel> desserts = new ArrayList<>();
 
         for(Item item: hall.entrees){
-            entrees.add(new ItemPanel(item,hall.entrees.indexOf(item)*170+30,185));
+            entrees.add(new ItemPanel(item,hall.entrees.indexOf(item)*170+30,185,mouseListener,actionListener));
             itemPanelArr.add(entrees.get(entrees.size()-1));
         }
 
         for(Item item: hall.sides){
-            sides.add(new ItemPanel(item,hall.sides.indexOf(item)*170+30,390));
+            sides.add(new ItemPanel(item,hall.sides.indexOf(item)*170+30,390,mouseListener,actionListener));
         }
 
         for(Item item: hall.desserts){
-            desserts.add(new ItemPanel(item,hall.desserts.indexOf(item)*170+30,820));
+            desserts.add(new ItemPanel(item,hall.desserts.indexOf(item)*170+30,820,mouseListener,actionListener));
         }
 
         for (ItemPanel entree : entrees) {
@@ -1148,14 +1152,19 @@ public class Main extends JComponent implements Runnable{
             content.add(dessert);
         }
 
+        for(int i = 0; i < 8; i++){
+            itemLabels.add(new JLabel(user.meals[mealNumber-1].items.get(i)+".........."+user.meals[mealNumber-1].size.get(i)));
+            itemLabels.get(itemLabels.size()-1).setBounds(i*20+5,5,200,20);
+            itemListPanel.add(itemLabels.get(i));
+            if(i+1 == user.meals[mealNumber-1].items.size()){
+                break;
+            }
 
-
+        }
 
 
        mealScreen.setVisible(true);
        content.repaint();
-
-
     }
 
     public void writeFiles(){
