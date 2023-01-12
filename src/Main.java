@@ -151,11 +151,22 @@ public class Main extends JComponent implements Runnable{
             }else if(e.getSource() instanceof JButton && mealScreen.isVisible()){
                 if(((JButton) e.getSource()).getText().equals("More nutrition info")){
                     if(((JButton) e.getSource()).getParent() instanceof ItemPanel) {
-                        NutritionWindow nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item);
+                        nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item,actionListener);
 
                     }
+                }else if(((JButton) e.getSource()).getParent().getLayout()instanceof GridLayout){
+
                 }
             }
+          if(((JButton)e.getSource()).getText().equals("OK")){
+                if(mealHeader.getText().equals("Breakfast")){
+                    user.meals[0].items.add(window.item.name);
+                    user.meals[0].size.add(window.servingUnits[window.quantityBox.getSelectedIndex()]);
+                    writeFiles();
+                }
+
+            }
+
 
 
 
@@ -458,6 +469,9 @@ public class Main extends JComponent implements Runnable{
 
         @Override
         public void mousePressed(MouseEvent e) {
+            window = new SelectionWindow(((ItemPanel)e.getSource()).item,((ItemPanel)e.getSource()).portionsize,actionListener,itemListener);
+
+
 
 
 
@@ -593,6 +607,9 @@ public class Main extends JComponent implements Runnable{
 
     ArrayList<ItemPanel> itemPanelArr;
     ArrayList<JLabel> itemLabels;
+    NutritionWindow nutritionWindow;
+
+    SelectionWindow window;
 
 
 

@@ -23,11 +23,14 @@ public class ItemPanel extends JPanel {
 
     double multiplier = 1;
 
+    MouseListener mouseListener;
+
 
 
 
 
     ItemPanel(Item item, int x, int y, MouseListener mouseListener, ActionListener actionListener){
+        addMouseListener(mouseListener);
         String toConvert = "";
         for(int i = 0; i < item.serving.length(); i ++){
             if(item.serving.charAt(i) < 58){

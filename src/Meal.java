@@ -164,7 +164,7 @@ public class Meal {
     public String toString(){
         String mealArr = "[";
         for(int i = 0; i < items.size(); i++){
-            mealArr += items.get(i)+"-"+size.get(i)+",";
+            mealArr += items.get(i)+"-"+size.get(i)+"-";
         }
         return(mealArr.substring(0,mealArr.length()-1)+"]");
     }
