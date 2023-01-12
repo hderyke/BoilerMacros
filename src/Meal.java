@@ -17,6 +17,9 @@ public class Meal {
         String[]itemArr = itemString.substring(1,itemString.length()).split("-");
 
         for(int i = 0; i < itemArr.length; i = i+2){
+            if (itemArr[i].equals("")){
+                break;
+            }
             items.add(itemArr[i]);
             size.add(Double.parseDouble(itemArr[i+1]));
         }

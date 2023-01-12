@@ -22,6 +22,7 @@ public class SelectionWindow extends JFrame {
     SelectionWindow(Item item, double otherUnit, ActionListener actionListener, ItemListener itemListener){
         super();
         setLayout(new FlowLayout());
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setResizable(false);
         setTitle("Adding "+item.name);
         setVisible(true);

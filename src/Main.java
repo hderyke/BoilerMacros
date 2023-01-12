@@ -3,7 +3,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -17,31 +16,31 @@ public class Main extends JComponent implements Runnable{
     JFrame frame;
     Container content;
 
-    public static final String[] entreeKeywords = new String[]{"eggs","chicken","beef","pork","pasta","pizza","sausage","burger","patty","fish","shrimp","crab","turkey"};
-    public static final String[] diningHalls = new String[]{"Wiley","Earhart","Ford","Windsor","Hillenbrand"};
+    public static final String[] entreeKeywords = new String[]{"eggs","chicken","beef","pork","pasta","pizza","sausage","burger","patty","fish","shrimp","crab","turkey"};// keywords for sorting foods into "entree" catagory,basically high protein foods
+    public static final String[] diningHalls = new String[]{"Wiley","Earhart","Ford","Windsor","Hillenbrand"};// the dining halls
     ActionListener actionListener = new ActionListener() {
-
 
         @Override
         public void actionPerformed(ActionEvent e) {
 
-            if(e.getSource().equals(preferencesButton)){
+            if(e.getSource().equals(preferencesButton)){//the ... button in the corner of main screen
 
                 content.removeAll();
                 frame.repaint();
                 preferencesScreen();
-                content.add(preferencesScreen,BorderLayout.CENTER);
+                content.add(preferencesScreen,BorderLayout.CENTER);// adds preferences screen
 
             }
 
             else if(e.getSource().equals(settingsButton)){
-                writeFiles();
+                writeFiles();// idk what i want this button to do
             }
 
-            else if(e.getSource().equals(meal1)){
+            else if(e.getSource().equals(meal1)){// buttons for each meal on the main screen, shows option pane asking what dining hall and then displays meal screen
                 content.removeAll();
                 content.repaint();
-                mealScreen(1, (String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[0]));
+                combineItems(0);
+                mealScreen(1, (String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[0]));// the dining hall popup
                 content.add(mealScreen);
             }else if(e.getSource().equals(meal2)){
                 content.removeAll();
@@ -55,10 +54,10 @@ public class Main extends JComponent implements Runnable{
                 content.repaint();
             }
 
-            else if(e.getSource().equals(backButton)){
+            else if(e.getSource().equals(backButton)){//back to the main menu
                 if(backButton.getParent().equals(preferencesScreen)) {
 
-                    user.preferences.portions = (double) slider.getValue() / 100;
+                    user.preferences.portions = (double) slider.getValue() / 100;// updating allergy checkboxes
                     if (vegetarianBox.isSelected()) {
                         user.preferences.isVegetarian = true;
                     } else {
@@ -79,29 +78,31 @@ public class Main extends JComponent implements Runnable{
                     } else {
                         user.preferences.isDairyFree = false;
                     }
-                    if (user.preferences.macros[0] + user.preferences.macros[1] + user.preferences.macros[2] != 100) {
+                    if (user.preferences.macros[0] + user.preferences.macros[1] + user.preferences.macros[2] != 100) {// checks to see if macros add up to 100%
                         JOptionPane.showMessageDialog(preferencesScreen, "Macro ratio must add up to 100", "BoilerMacros", JOptionPane.ERROR_MESSAGE);
+
+                        //TODO: ooga booga
                         return;
                     }
                 }
-                writeFiles();
+                writeFiles();// updates preference and meal info
                 content.removeAll();
                 frame.repaint();
                 mainScreen();
-                content.add(mainScreen);
+                content.add(mainScreen);// add main menu
             }
 
-            else if(e.getSource().equals(addFiberGoal)){
+            else if(e.getSource().equals(addFiberGoal)){//removes button and adds text field
                 preferencesScreen.repaint();
                 fiberGoalField.setText("");
-                fiberGoalField.setBackground(Color.BLACK);
+                fiberGoalField.setBackground(Color.BLACK);//^^
                 preferencesScreen.remove(addFiberGoal);
                 preferencesScreen.add(fiberGoal);
                 preferencesScreen.add(fiberGoalField);
 
         }
 
-            else if(e.getSource().equals(addCalciumGoal)){
+            else if(e.getSource().equals(addCalciumGoal)){//^^
             preferencesScreen.repaint();
             calciumGoalField.setText("");
             calciumGoal.setBackground(Color.WHITE);
@@ -111,7 +112,7 @@ public class Main extends JComponent implements Runnable{
 
         }
 
-            else if(e.getSource().equals(addIronGoal)){
+            else if(e.getSource().equals(addIronGoal)){//^^
                 preferencesScreen.repaint();
                 ironGoalField.setText("");
                 ironGoalField.setBackground(Color.WHITE);
@@ -121,7 +122,7 @@ public class Main extends JComponent implements Runnable{
 
             }
 
-            else if(e.getSource().equals(addSugarGoal)){
+            else if(e.getSource().equals(addSugarGoal)){//^^
                 preferencesScreen.repaint();
                 sugarGoalField.setText("");
                 sugarGoalField.setBackground(Color.WHITE);
@@ -131,7 +132,7 @@ public class Main extends JComponent implements Runnable{
 
             }
 
-            else if(e.getSource().equals(addSodiumGoal)){
+            else if(e.getSource().equals(addSodiumGoal)){//^^
                 preferencesScreen.repaint();
                 sodiumGoalField.setText("");
                 sodiumGoalField.setBackground(Color.WHITE);
@@ -140,7 +141,7 @@ public class Main extends JComponent implements Runnable{
                 preferencesScreen.add(sodiumGoalField);
 
             }
-            else if(e.getSource().equals(addCholesterolGoal)){
+            else if(e.getSource().equals(addCholesterolGoal)){//^^
                 preferencesScreen.repaint();
                 cholesterolGoalField.setText("");
                 cholesterolGoalField.setBackground(Color.WHITE);
@@ -148,23 +149,58 @@ public class Main extends JComponent implements Runnable{
                 preferencesScreen.add(cholesterolGoal);
                 preferencesScreen.add(cholesterolGoalField);
 
-            }else if(e.getSource() instanceof JButton && mealScreen.isVisible()){
+            }else if(e.getSource() instanceof JButton && mealScreen.isVisible()){//weird conditions to specify the nutrition button
                 if(((JButton) e.getSource()).getText().equals("More nutrition info")){
                     if(((JButton) e.getSource()).getParent() instanceof ItemPanel) {
-                        nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item,actionListener);
+                        nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item,actionListener);// adds nutrition window
 
                     }
                 }else if(((JButton) e.getSource()).getParent().getLayout()instanceof GridLayout){
+                    //TODO: make the multiplier button work or add a combo box idk
 
                 }
             }
-          if(((JButton)e.getSource()).getText().equals("OK")){
-                if(mealHeader.getText().equals("Breakfast")){
-                    user.meals[0].items.add(window.item.name);
-                    user.meals[0].size.add(window.servingUnits[window.quantityBox.getSelectedIndex()]);
-                    writeFiles();
-                }
+            if(e.getSource() instanceof  JButton) {
+                if (((JButton) e.getSource()).getText().equals("OK")) {
+                    if (mealHeader.getText().equals("Breakfast")) {
+                        user.meals[0].items.add(window.item.name);
+                        user.meals[0].size.add(window.servingUnits[window.quantityBox.getSelectedIndex()]);
+                        combineItems(0);
+                        writeFiles();
+                        readFiles();
+                        content.repaint();
+                        window.dispose();
+                        content.removeAll();
+                        mealScreen(1,diningHall.getText().substring(26));
+                        content.add(mealScreen);
+                    } else if (mealHeader.getText().equals("Lunch")) {
+                        user.meals[1].items.add(window.item.name);
+                        user.meals[1].size.add(window.servingUnits[window.quantityBox.getSelectedIndex()]);
+                        combineItems(1);
+                        writeFiles();
+                        readFiles();
+                        content.repaint();
+                        window.dispose();
+                        content.removeAll();
+                        mealScreen(2,diningHall.getText().substring(26));
+                        content.add(mealScreen);
+                    } else if (mealHeader.getText().equals("Dinner")) {
+                        user.meals[2].items.add(window.item.name);
+                        user.meals[2].size.add(window.servingUnits[window.quantityBox.getSelectedIndex()]);
+                        combineItems(2);
+                        writeFiles();
+                        readFiles();
+                        content.repaint();
+                        window.dispose();
+                        content.removeAll();
+                        mealScreen(3,diningHall.getText().substring(26));
+                        content.add(mealScreen);
+                    }
 
+                } else if (((JButton) e.getSource()).getText().equals("Cancel")) {// cancel button
+                    window.dispose();
+
+                }
             }
 
 
@@ -469,7 +505,9 @@ public class Main extends JComponent implements Runnable{
 
         @Override
         public void mousePressed(MouseEvent e) {
-            window = new SelectionWindow(((ItemPanel)e.getSource()).item,((ItemPanel)e.getSource()).portionsize,actionListener,itemListener);
+            if(e.getSource() instanceof JPanel) {
+                window = new SelectionWindow(((ItemPanel) e.getSource()).item, ((ItemPanel) e.getSource()).portionsize, actionListener, itemListener);
+            }
 
 
 
@@ -602,6 +640,7 @@ public class Main extends JComponent implements Runnable{
     JLabel totalMealCarbs;
     JLabel totalMealFat;
     JLabel totalMealProtein;
+    ArrayList<JLabel> itemTotals;
     JPanel itemListPanel;
     JButton moreNutrition;
 
@@ -620,14 +659,8 @@ public class Main extends JComponent implements Runnable{
     static User user;
 
     public static void main(String[] args) {
-        try {
-            //read user info
-            BufferedReader userReader = new BufferedReader(new FileReader("storage/UserInfo.txt"));
-            String name = userReader.readLine();
-            String preferences = userReader.readLine();
-            String meals = userReader.readLine();
-            userReader.close();
 
+        try {
             //adding food to item list
             BufferedReader listedReader = new BufferedReader(new FileReader("storage/fooditems/listedfoods.txt"));
             while (true) {
@@ -636,20 +669,18 @@ public class Main extends JComponent implements Runnable{
                     break;
                 }
                 String[] itemArr = line.split("\\,");
-                items.add(new Item(itemArr[0], itemArr[1],Integer.parseInt(itemArr[2]),
+                items.add(new Item(itemArr[0], itemArr[1], Integer.parseInt(itemArr[2]),
                         Double.parseDouble(itemArr[3]), Double.parseDouble(itemArr[4]), Integer.parseInt(itemArr[5]),
                         Integer.parseInt(itemArr[6]), Integer.parseInt(itemArr[7]),
                         Integer.parseInt(itemArr[8]), Integer.parseInt(itemArr[9]), Integer.parseInt(itemArr[10]),
-                        Integer.parseInt(itemArr[11]), Integer.parseInt(itemArr[12]),itemArr[13],itemArr[14],itemArr[15]));
+                        Integer.parseInt(itemArr[11]), Integer.parseInt(itemArr[12]), itemArr[13], itemArr[14], itemArr[15]));
             }
             listedReader.close();
-            user = new User(name, preferences, meals);
-            SwingUtilities.invokeLater(new Main());
-
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
-
+        readFiles();
+            SwingUtilities.invokeLater(new Main());
 
     }
 
@@ -669,6 +700,7 @@ public class Main extends JComponent implements Runnable{
 
 
     public void mainScreen() {
+        readFiles();
         mainScreen = new JPanel();
         mainScreen.setLayout(null);
         mainScreen.setBounds(0,0,500,800);
@@ -1069,6 +1101,7 @@ public class Main extends JComponent implements Runnable{
         totalMealFat = new JLabel("Fat:    "+user.meals[mealNumber-1].getFat());
         totalMealProtein = new JLabel("Protein:     "+user.meals[mealNumber-1].getProtein());
         moreNutrition = new JButton("More nutrition info...");
+        itemTotals = new ArrayList<>();
 
 
 
@@ -1171,7 +1204,7 @@ public class Main extends JComponent implements Runnable{
 
         for(int i = 0; i < 8; i++){
             itemLabels.add(new JLabel(user.meals[mealNumber-1].items.get(i)+".........."+user.meals[mealNumber-1].size.get(i)));
-            itemLabels.get(itemLabels.size()-1).setBounds(i*20+5,5,200,20);
+            itemLabels.get(itemLabels.size()-1).setBounds(5,i*20+5,200,20);
             itemListPanel.add(itemLabels.get(i));
             if(i+1 == user.meals[mealNumber-1].items.size()){
                 break;
@@ -1193,6 +1226,23 @@ public class Main extends JComponent implements Runnable{
             userWriter.flush();
 
         }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void readFiles(){
+        try {
+            //read user info
+            BufferedReader userReader = new BufferedReader(new FileReader("storage/UserInfo.txt"));
+            String name = userReader.readLine();
+            String preferences = userReader.readLine();
+            String meals = userReader.readLine();
+            userReader.close();
+
+            user = new User(name, preferences, meals);
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1244,6 +1294,24 @@ public class Main extends JComponent implements Runnable{
         unitConverter(carbRatio);
         unitConverter(fatRatio);
         unitConverter(proteinRatio);
+    }
+
+    public void combineItems(int meal){
+
+        for(int i = 0; i < user.meals[meal].items.size(); i++){
+            String name = user.meals[meal].items.get(i);
+            double size = user.meals[meal].size.get(i);
+            for(int j = i+1; j < user.meals[meal].items.size(); j++){
+                if(user.meals[meal].items.get(j).equals(name)){
+                    user.meals[meal].size.set(i,size+user.meals[meal].size.get(j));
+                    user.meals[meal].items.remove(j);
+                    user.meals[meal].size.remove(j);
+                }
+
+
+            }
+
+        }
     }
 
     @Override
