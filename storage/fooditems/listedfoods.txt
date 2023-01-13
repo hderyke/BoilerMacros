@@ -3,3 +3,4 @@ Smokey Links,2 Each Serving,181,16,5,35,540,5,1,0,5,6,2,fffff,Pork-Mechanically 
 Hash Brown,1 Each,76,3,0,0,210,11,0,1,0,0,0,ttfff,Potatoes-Vegetable Oil,Wiley-Classics-b
 Peach Slices,0.5 cups,37,0,0,0,0,10,9,0,0,0,2,ttfff,Sliced Peaches,Wiley-Fresh Tastes-b
 Zucchini Break,1 slice,243,11,1,25,180,33,21,0,2,2,6,ttfff,sugar-zucchini-oil-flour,Wiley-Delectables-b
+Flame Grilled Chicken Burger,1 each,195,14,3.5,95,530,0,0,0,18,0,10,fffff,chicken-Dark meat-seasoning-onion,Wiley-Open Flame-l

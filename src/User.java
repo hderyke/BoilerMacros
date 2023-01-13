@@ -52,18 +52,24 @@ public class User {
     }
 
     public void updateStats(){
+        calories = 0;
+        carbs = 0;
+        fat = 0;
+        protein = 0;
+        fiber = 0;
+
         for(Meal meal: meals){
             if(meal != null){
-                calories = meal.getCalories();
-                carbs = meal.getCarbs();
-                fat = meal.getFat();
-                protein = meal.getProtein();
-                fiber = meal.getFiber();
-                calcium = meal.getCalcium();
-                iron = meal.getIron();
-                sugar = meal.getSugar();
-                sodium = meal.getSodium();
-                cholesterol = meal.getCholesterol();
+                calories += meal.getCalories();
+                carbs += meal.getCarbs();
+                fat += meal.getFat();
+                protein += meal.getProtein();
+                fiber += meal.getFiber();
+                calcium += meal.getCalcium();
+                iron += meal.getIron();
+                sugar += meal.getSugar();
+                sodium += meal.getSodium();
+                cholesterol += meal.getCholesterol();
 
             }
         }

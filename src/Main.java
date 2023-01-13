@@ -40,18 +40,32 @@ public class Main extends JComponent implements Runnable{
                 content.removeAll();
                 content.repaint();
                 combineItems(0);
-                mealScreen(1, (String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[0]));// the dining hall popup
+                if(user.meals[0].diningHall.equals("")){
+                    mealScreen(1, (String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[0]));// the dining hall popup
+                }else{
+                    mealScreen(1,user.meals[0].diningHall);
+                }
                 content.add(mealScreen);
-            }else if(e.getSource().equals(meal2)){
+            }else if(e.getSource().equals(meal2)){// buttons for each meal on the main screen, shows option pane asking what dining hall and then displays meal screen
                 content.removeAll();
-                mealScreen(2,(String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[0]));
-                content.add(mealScreen);
                 content.repaint();
-            }else if(e.getSource().equals(meal3)){
+                combineItems(1);
+                if(user.meals[1].diningHall.equals("")){
+                    mealScreen(2, (String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[1]));// the dining hall popup
+                }else{
+                    mealScreen(2,user.meals[1].diningHall);
+                }
+                content.add(mealScreen);
+            }else if(e.getSource().equals(meal3)){// buttons for each meal on the main screen, shows option pane asking what dining hall and then displays meal screen
                 content.removeAll();
-                mealScreen(3,(String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[0]));
-                content.add(mealScreen);
                 content.repaint();
+                combineItems(2);
+                if(user.meals[2].diningHall.equals("")){
+                    mealScreen(3, (String) JOptionPane.showInputDialog(mainScreen,"Select a dining hall:","BoilerMacros",JOptionPane.PLAIN_MESSAGE,null,diningHalls,diningHalls[2]));// the dining hall popup
+                }else{
+                    mealScreen(3,user.meals[2].diningHall);
+                }
+                content.add(mealScreen);
             }
 
             else if(e.getSource().equals(backButton)){//back to the main menu
@@ -141,7 +155,7 @@ public class Main extends JComponent implements Runnable{
                 preferencesScreen.add(sodiumGoalField);
 
             }
-            else if(e.getSource().equals(addCholesterolGoal)){//^^
+            else if(e.getSource().equals(addCholesterolGoal)) {//^^
                 preferencesScreen.repaint();
                 cholesterolGoalField.setText("");
                 cholesterolGoalField.setBackground(Color.WHITE);
@@ -149,18 +163,21 @@ public class Main extends JComponent implements Runnable{
                 preferencesScreen.add(cholesterolGoal);
                 preferencesScreen.add(cholesterolGoalField);
 
-            }else if(e.getSource() instanceof JButton && mealScreen.isVisible()){//weird conditions to specify the nutrition button
-                if(((JButton) e.getSource()).getText().equals("More nutrition info")){
-                    if(((JButton) e.getSource()).getParent() instanceof ItemPanel) {
-                        nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item,actionListener);// adds nutrition window
+            }if (mealScreen != null) {
+                if (e.getSource() instanceof JButton && mealScreen.isVisible()) {//weird conditions to specify the nutrition button
+                        if (((JButton) e.getSource()).getText().equals("More nutrition info")) {
+                            if (((JButton) e.getSource()).getParent() instanceof ItemPanel) {
+                                nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item, actionListener);// adds nutrition window
 
+                            }
+                        } else if (((JButton) e.getSource()).getParent().getLayout() instanceof GridLayout) {
+                            //TODO: make the multiplier button work or add a combo box idk
+
+                        }
                     }
-                }else if(((JButton) e.getSource()).getParent().getLayout()instanceof GridLayout){
-                    //TODO: make the multiplier button work or add a combo box idk
 
-                }
             }
-            if(e.getSource() instanceof  JButton) {
+            if(e.getSource() instanceof  JButton && mealScreen != null) {
                 if (((JButton) e.getSource()).getText().equals("OK")) {
                     if (mealHeader.getText().equals("Breakfast")) {
                         user.meals[0].items.add(window.item.name);
@@ -1075,6 +1092,7 @@ public class Main extends JComponent implements Runnable{
     }
 
     public void mealScreen(int mealNumber,String diningHall){
+        String meal = new String[]{"b","l","d"}[mealNumber-1];
         DiningHall hall = new DiningHall(diningHall);
         mealScreen = new JPanel();
         mealScreen.setLayout(new FlowLayout());
@@ -1179,17 +1197,29 @@ public class Main extends JComponent implements Runnable{
         ArrayList<ItemPanel> sides = new ArrayList<>();
         ArrayList<ItemPanel> desserts = new ArrayList<>();
 
+        int counter = 0;
         for(Item item: hall.entrees){
-            entrees.add(new ItemPanel(item,hall.entrees.indexOf(item)*170+30,185,mouseListener,actionListener));
-            itemPanelArr.add(entrees.get(entrees.size()-1));
+            String mealStr = item.location.split("-")[2];
+            if(mealStr.contains(meal)) {
+                entrees.add(new ItemPanel(item, (hall.entrees.indexOf(item)-counter) * 170 + 30, 185, mouseListener, actionListener));
+                itemPanelArr.add(entrees.get(entrees.size() - 1));
+            }else{
+                counter++;
+            }
         }
 
         for(Item item: hall.sides){
-            sides.add(new ItemPanel(item,hall.sides.indexOf(item)*170+30,390,mouseListener,actionListener));
+            String mealStr = item.location.split("-")[2];
+            if(mealStr.contains(meal)) {
+                sides.add(new ItemPanel(item, hall.sides.indexOf(item) * 170 + 30, 390, mouseListener, actionListener));
+            }
         }
 
         for(Item item: hall.desserts){
-            desserts.add(new ItemPanel(item,hall.desserts.indexOf(item)*170+30,820,mouseListener,actionListener));
+            String mealStr = item.location.split("-")[2];
+            if(mealStr.contains(meal)) {
+                desserts.add(new ItemPanel(item, hall.desserts.indexOf(item) * 170 + 30, 820, mouseListener, actionListener));
+            }
         }
 
         for (ItemPanel entree : entrees) {
@@ -1203,6 +1233,9 @@ public class Main extends JComponent implements Runnable{
         }
 
         for(int i = 0; i < 8; i++){
+            if(user.meals[mealNumber-1].items.size() < 1){
+                break;
+            }
             itemLabels.add(new JLabel(user.meals[mealNumber-1].items.get(i)+".........."+user.meals[mealNumber-1].size.get(i)));
             itemLabels.get(itemLabels.size()-1).setBounds(5,i*20+5,200,20);
             itemListPanel.add(itemLabels.get(i));
@@ -1222,7 +1255,18 @@ public class Main extends JComponent implements Runnable{
             PrintWriter userWriter = new PrintWriter(new FileWriter("storage/UserInfo.txt"));
             userWriter.println(user.name);
             userWriter.println(user.preferences.toString());
-            userWriter.println(user.meals[0].toString());
+            for(int i = 0; i < 3; i++){
+                try {
+                    userWriter.print(user.meals[i].toString());
+                }catch (Exception e){
+                    try{
+                        userWriter.print("[]");
+                    }catch (Exception f){
+                        System.out.println("fuck me");
+                    }
+                }
+            }
+            userWriter.println();
             userWriter.flush();
 
         }catch (Exception e){

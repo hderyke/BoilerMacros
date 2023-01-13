@@ -5,6 +5,8 @@ public class Meal {
     ArrayList<String> items = new ArrayList<String>();
     ArrayList<Double> size = new ArrayList<>();
 
+    String diningHall;
+
     int calories;
 
     int[] macros = new int[3];
@@ -15,8 +17,9 @@ public class Meal {
 
     public Meal(String itemString){
         String[]itemArr = itemString.substring(1,itemString.length()).split("-");
+        diningHall = itemArr[0];
 
-        for(int i = 0; i < itemArr.length; i = i+2){
+        for(int i = 1; i < itemArr.length; i = i+2){
             if (itemArr[i].equals("")){
                 break;
             }
@@ -165,7 +168,10 @@ public class Meal {
 
 
     public String toString(){
-        String mealArr = "[";
+        if(diningHall == null){
+            return("[]");
+        }
+        String mealArr = "["+diningHall+"-";
         for(int i = 0; i < items.size(); i++){
             mealArr += items.get(i)+"-"+size.get(i)+"-";
         }
