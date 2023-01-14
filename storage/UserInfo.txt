@@ -1,3 +1,3 @@
 henry
 peanuts-gluten,0.66,2500,63,31,6,-1,-1,21,20,30,30,false,false,false,false
-[Wiley-Scrambled Eggs-5.25-Smokey Links-1.0-Peach Slices-1.0][Wiley-Flame Grilled Chicken Burger-1.25][]
+[Wiley-Scrambled Eggs-2.0-Hash Brown-1.5-2% Milk-0.25][Earhart][Ford]

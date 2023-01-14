@@ -69,7 +69,12 @@ public class Item {
                   type = "entree";
                   break;
               }
-          }this.location = location;
+          }for(String term : Main.drinkKeywords){
+             if(ingredients.toLowerCase().contains(term)){
+                 type = "drink";
+                 break;
+             }
+         }this.location = location;
 
      }
 

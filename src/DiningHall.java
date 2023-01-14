@@ -24,9 +24,11 @@ public class DiningHall {
                     case "side":
                         sides.add(item);
                         continue;
+                    case "drink":
+                        drinks.add(item);
+                        continue;
                     case "dessert":
                         desserts.add(item);
-                        continue;
                 }
             }
         }

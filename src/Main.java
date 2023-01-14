@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Main extends JComponent implements Runnable{
 
@@ -17,6 +18,7 @@ public class Main extends JComponent implements Runnable{
     Container content;
 
     public static final String[] entreeKeywords = new String[]{"eggs","chicken","beef","pork","pasta","pizza","sausage","burger","patty","fish","shrimp","crab","turkey"};// keywords for sorting foods into "entree" catagory,basically high protein foods
+    public static final String[] drinkKeywords = new String[]{"juice","milk"};
     public static final String[] diningHalls = new String[]{"Wiley","Earhart","Ford","Windsor","Hillenbrand"};// the dining halls
     ActionListener actionListener = new ActionListener() {
 
@@ -214,8 +216,14 @@ public class Main extends JComponent implements Runnable{
                         content.add(mealScreen);
                     }
 
-                } else if (((JButton) e.getSource()).getText().equals("Cancel")) {// cancel button
+                } else if (((JButton) e.getSource()).getText().equals("Cancel")) {
+                    // cancel button
                     window.dispose();
+                }
+
+            }if(e.getSource().equals(deleteButton)){
+                for(int i = 0; i < user.meals[Arrays.asList(new String[]{"Breakfast","Lunch","Dinner"}).indexOf(mealHeader.getText())].items.size(); i++){
+                    deleteButtons.add(new JButton("x"));
 
                 }
             }
@@ -554,12 +562,57 @@ public class Main extends JComponent implements Runnable{
             if(e.getSource().equals(slider)){
             for(Component component: content.getComponents()){
                 if(component instanceof ItemPanel) {//moves all the buttons
-                    component.setLocation(((ItemPanel) component).x, ((ItemPanel) component).y - slider.getValue());
+                    switch (((ItemPanel) component).item.type) {
+                        case "entree" -> {
+                            component.setLocation(((ItemPanel) component).x - entreesSlider.getValue(), ((ItemPanel) component).y - slider.getValue());
+                            continue;
+                        }
+                        case "side" -> {
+                            component.setLocation(((ItemPanel) component).x - sidesSlider.getValue(), ((ItemPanel) component).y - slider.getValue());
+                            continue;
+                        }
+                        case "drink" -> {
+                            component.setLocation(((ItemPanel) component).x - drinkSlider.getValue(), ((ItemPanel) component).y - slider.getValue());
+                            continue;
+                        }
+                        case "dessert" ->
+                                component.setLocation(((ItemPanel) component).x - dessertSlider.getValue(), ((ItemPanel) component).y - slider.getValue());
+                    }
                 }
+                }entreesSlider.setLocation(100,328-slider.getValue());
+                sidesSlider.setLocation(100,535-slider.getValue());
+                drinkSlider.setLocation(100,750-slider.getValue());
+                dessertSlider.setLocation(100,960-slider.getValue());
+                mealScreen.setLocation(0,-slider.getValue());
+                content.repaint();
+            }else if(e.getSource().equals(entreesSlider)){
+                for(Component component : content.getComponents()){
+                    if(component instanceof ItemPanel) {
+                        if (((ItemPanel) component).item.type.equals("entree")) {
+                            component.setLocation(((ItemPanel) component).x - entreesSlider.getValue(), ((ItemPanel) component).y-slider.getValue());
+                        }
+                    }
+
+                }
+            }else if(e.getSource().equals(sidesSlider)){
+                for(Component component : content.getComponents()){
+                    if(component instanceof ItemPanel) {
+                        if (((ItemPanel) component).item.type.equals("side")) {
+                            component.setLocation(((ItemPanel) component).x - sidesSlider.getValue(), ((ItemPanel) component).y-slider.getValue());
+                        }
+                    }
+
+                }
+            }else if(e.getSource().equals(dessertSlider)){
+                for(Component component : content.getComponents()){
+                    if(component instanceof ItemPanel) {
+                        if (((ItemPanel) component).item.type.equals("dessert")) {
+                            component.setLocation(((ItemPanel) component).x - sidesSlider.getValue(), ((ItemPanel) component).y-slider.getValue());
+                        }
+                    }
+
                 }
             }
-            mealScreen.setLocation(0,0-slider.getValue());
-            content.repaint();
 
 
         }
@@ -666,6 +719,12 @@ public class Main extends JComponent implements Runnable{
     NutritionWindow nutritionWindow;
 
     SelectionWindow window;
+    JButton deleteButton;
+    ArrayList<JButton> deleteButtons;
+    JSlider entreesSlider;
+    JSlider sidesSlider;
+    JSlider drinkSlider;
+    JSlider dessertSlider;
 
 
 
@@ -693,6 +752,21 @@ public class Main extends JComponent implements Runnable{
                         Integer.parseInt(itemArr[11]), Integer.parseInt(itemArr[12]), itemArr[13], itemArr[14], itemArr[15]));
             }
             listedReader.close();
+
+            BufferedReader unlistedReader = new BufferedReader(new FileReader("storage/fooditems/unlistedfoods.txt"));
+            while (true) {
+                String line = unlistedReader.readLine();
+                if (line == null) {
+                    break;
+                }
+                String[] itemArr = line.split("\\,");
+                items.add(new Item(itemArr[0], itemArr[1], Integer.parseInt(itemArr[2]),
+                        Double.parseDouble(itemArr[3]), Double.parseDouble(itemArr[4]), Integer.parseInt(itemArr[5]),
+                        Integer.parseInt(itemArr[6]), Integer.parseInt(itemArr[7]),
+                        Integer.parseInt(itemArr[8]), Integer.parseInt(itemArr[9]), Integer.parseInt(itemArr[10]),
+                        Integer.parseInt(itemArr[11]), Integer.parseInt(itemArr[12]), itemArr[13], itemArr[14], itemArr[15]));
+            }
+            unlistedReader.close();
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -1094,6 +1168,7 @@ public class Main extends JComponent implements Runnable{
     public void mealScreen(int mealNumber,String diningHall){
         String meal = new String[]{"b","l","d"}[mealNumber-1];
         DiningHall hall = new DiningHall(diningHall);
+        user.meals[mealNumber-1].diningHall=hall.name;
         mealScreen = new JPanel();
         mealScreen.setLayout(new FlowLayout());
         mealScreen.setSize(500,1300);
@@ -1103,7 +1178,7 @@ public class Main extends JComponent implements Runnable{
         mealHeader = new JLabel(new String[]{"Breakfast","Lunch","Dinner"}[mealNumber-1]);
         EntreeHeader = new JLabel("Entrees");
         sidesHeader = new JLabel("Sides");
-        desertsHeader = new JLabel("Desert");
+        desertsHeader = new JLabel("Dessert");
         drinksLabel = new JLabel("Beverages");
         totalsPanel = new JPanel();
         slider = new JSlider(Adjustable.VERTICAL,0,400,0);
@@ -1120,6 +1195,14 @@ public class Main extends JComponent implements Runnable{
         totalMealProtein = new JLabel("Protein:     "+user.meals[mealNumber-1].getProtein());
         moreNutrition = new JButton("More nutrition info...");
         itemTotals = new ArrayList<>();
+        deleteButton = new JButton("-");
+        deleteButtons = new ArrayList<>();
+       // entreesSlider = new JSlider();
+        entreesSlider = new JSlider(JSlider.HORIZONTAL, 0, hall.entrees.size() * 80, 0);
+        sidesSlider = new JSlider(JSlider.HORIZONTAL,0,hall.sides.size()*80,0);
+        drinkSlider = new JSlider(JSlider.HORIZONTAL,0,hall.drinks.size()*80,0);
+        dessertSlider = new JSlider(JSlider.HORIZONTAL,0,hall.desserts.size()*80,0);
+
 
 
 
@@ -1134,16 +1217,21 @@ public class Main extends JComponent implements Runnable{
         sidesHeader.setBounds(210,350,100,40);
         drinksLabel.setBounds(170, 560,200,40);
         desertsHeader.setBounds(190,770,200,40);
-        entreePanel.setBounds(0,180,500,160);
-        sidesPanel.setBounds(0,385,500,160);
-        drinksPanel.setBounds(0,600,500,160);
-        desertsPanel.setBounds(0,810,500,160);
+        entreePanel.setBounds(0,180,500,170);
+        sidesPanel.setBounds(0,385,500,170);
+        drinksPanel.setBounds(0,600,500,170);
+        desertsPanel.setBounds(0,810,500,170);
         itemListPanel.setBounds(15,15,200,140);
         totalMealCalories.setBounds(250,25,200,40);
         totalMealCarbs.setBounds(250,60,150,20);
         totalMealFat.setBounds(250,85,150,20);
         totalMealProtein.setBounds(250,110,150,20);
         moreNutrition.setBounds(248,135,150,17);
+        deleteButton.setBounds(220,10,20,20);
+        entreesSlider.setBounds(100,328,300,20);
+        sidesSlider.setBounds(100,535,300,20);
+        drinkSlider.setBounds(100,750,300,20);
+        dessertSlider.setBounds(100,960,300,20);
 
         totalsPanel.setBackground(new Color(200,200,200));
         entreePanel.setBackground(new Color(204,203,143));
@@ -1165,7 +1253,12 @@ public class Main extends JComponent implements Runnable{
         backButton.addActionListener(actionListener);
         searchBar.addActionListener(actionListener);
         slider.addChangeListener(changeListener);
+        entreesSlider.addChangeListener(changeListener);
+        sidesSlider.addChangeListener(changeListener);
+        drinkSlider.addChangeListener(changeListener);
+        dessertSlider.addChangeListener(changeListener);
         moreNutrition.addActionListener(actionListener);
+        deleteButton.addActionListener(actionListener);
 
 
 
@@ -1192,9 +1285,15 @@ public class Main extends JComponent implements Runnable{
         totalsPanel.add(totalMealFat);
         totalsPanel.add(totalMealProtein);
         totalsPanel.add(moreNutrition);
+        totalsPanel.add(deleteButton);
+        content.add(entreesSlider);
+        content.add(sidesSlider);
+        content.add(drinkSlider);
+        content.add(dessertSlider);
 
         ArrayList<ItemPanel> entrees = new ArrayList<>();
         ArrayList<ItemPanel> sides = new ArrayList<>();
+        ArrayList<ItemPanel> drinks = new ArrayList<>();
         ArrayList<ItemPanel> desserts = new ArrayList<>();
 
         int counter = 0;
@@ -1215,6 +1314,13 @@ public class Main extends JComponent implements Runnable{
             }
         }
 
+        for(Item item: hall.drinks){
+            String mealStr = item.location.split("-")[2];
+            if(mealStr.contains(meal)) {
+                drinks.add(new ItemPanel(item, hall.drinks.indexOf(item) * 170 + 30, 605, mouseListener, actionListener));
+            }
+        }
+
         for(Item item: hall.desserts){
             String mealStr = item.location.split("-")[2];
             if(mealStr.contains(meal)) {
@@ -1227,6 +1333,9 @@ public class Main extends JComponent implements Runnable{
         }
         for (ItemPanel side : sides) {
             content.add(side);
+        }
+        for (ItemPanel drink : drinks) {
+            content.add(drink);
         }
         for (ItemPanel dessert : desserts) {
             content.add(dessert);
@@ -1244,6 +1353,7 @@ public class Main extends JComponent implements Runnable{
             }
 
         }
+
 
 
        mealScreen.setVisible(true);
