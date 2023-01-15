@@ -25,7 +25,7 @@ public class User {
 
     private int calcium;
 
-    private int iron;
+    private double iron;
 
     public User(String name, String preferences, String meals){
         this.name = name;
@@ -35,7 +35,6 @@ public class User {
         int meal = 0;
         while(meals.contains("]")){
         this.meals[meal] = new Meal(meals.substring(0,meals.indexOf(']')));
-            updateStats();
         try {
             meals = meals.substring(meals.indexOf(']') + 1);
         }catch (IndexOutOfBoundsException e){
@@ -43,6 +42,7 @@ public class User {
         }
         meal++;
         }
+        updateStats();
 
     }
 
@@ -100,7 +100,7 @@ public class User {
         return calcium;
     }
 
-    public int getIron() {
+    public double getIron() {
         return iron;
     }
 

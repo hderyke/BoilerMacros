@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
 
 public class NutritionWindow extends JFrame{
     Item item;
@@ -34,12 +35,13 @@ public class NutritionWindow extends JFrame{
 
     double multiplier = 1;
 
-    JTextField multiplierField;
+    JComboBox multiplierBox;
 
-    JButton servingSizeMultiplier;
+    JButton servingSizeImage;
+    final static Double[] servingUnits = new Double[]{.25,.5,.75,1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.75,3.0,3.25,3.5,3.75,4.0,4.25,4.5,4.75,5.0};
 
 
-    NutritionWindow(Item item, ActionListener actionListener){
+    NutritionWindow(Item item, ActionListener actionListener, ItemListener itemListener,double multiplier){
         super();
         this.item = item;
         setTitle(item.name+" Nutrition");
@@ -51,7 +53,8 @@ public class NutritionWindow extends JFrame{
         panel = new JPanel();
         setLayout(new GridLayout(13,2));
         panel.setBounds(100,300,300,500);
-        multiplierField = new JTextField();
+        multiplierBox = new JComboBox(servingUnits);
+        this.multiplier = multiplier;
 
         servingLabel= new JLabel("   Serving size: ");
         caloriesLabel = new JLabel("   Calories: ");
@@ -66,14 +69,16 @@ public class NutritionWindow extends JFrame{
         sodiumLabel = new JLabel("   Sodium: ");
         cholesterolLabel = new JLabel("   Cholesterol");
         servingSize = new JLabel(item.serving);
-        servingSizeMultiplier = new JButton("Multiply serving size");
+        servingSizeImage = new JButton("See serving size");
 
-        servingSizeMultiplier.addActionListener(actionListener);
+        servingSizeImage.addActionListener(actionListener);
+        multiplierBox.addItemListener(itemListener);
+
 
 
         calculate();
-        add(servingSizeMultiplier);
-        add(multiplierField);
+        add(servingSizeImage);
+        add(multiplierBox);
 
         add(servingLabel);
         add(servingSize);
@@ -103,25 +108,29 @@ public class NutritionWindow extends JFrame{
 
     public String getDV(double top, double bottom){
         try {
-            return String.valueOf(Math.round(100*top / bottom));
+            int i = (int) Math.round(100*top / bottom);
+            if(i > 999999 || i < -999){
+                return "";
+            }return "("+String.valueOf(i)+"% DV)";
         }
             catch(Exception e){
-                return"--";
+                return"";
             }
         }
 
         public void calculate(){
-            calories = new JLabel(String.valueOf(Math.round(item.calories*multiplier)));
-            fat = new JLabel(String.valueOf(item.fat*multiplier)+" g ("+Math.round(item.fat*multiplier/Main.user.getFat()*100)+"% DV)");
+
+            calories = new JLabel(String.valueOf(Math.round(item.calories*multiplier))+" g");
+            fat = new JLabel(String.valueOf(item.fat*multiplier)+" g "+getDV(item.fat*multiplier,(double)Main.user.preferences.macros[2]*Main.user.preferences.calorieGoal/900));
             satFat = new JLabel(String.valueOf(item.saturatedFat*multiplier)+" g ");
-            cholesterol = new JLabel(String.valueOf(Math.round(item.cholesterol*multiplier))+" mg ("+getDV(item.cholesterol*multiplier,Main.user.getCholesterol())+"% DV)");
-            carbs = new JLabel(String.valueOf(Math.round(item.carbs*multiplier))+" g ("+getDV(item.carbs*multiplier,Main.user.getCarbs())+"% DV)");
+            cholesterol = new JLabel(String.valueOf(Math.round(item.cholesterol*multiplier))+" mg "+getDV(item.cholesterol*multiplier,Main.user.preferences.cholesterolGoal));
+            carbs = new JLabel(String.valueOf(Math.round(item.carbs*multiplier))+" g "+getDV(item.carbs*multiplier,(double)Main.user.preferences.macros[2]*Main.user.preferences.calorieGoal/400));
             sugar = new JLabel(String.valueOf(Math.round(item.sugar*multiplier))+" g");
-            fiber =  new JLabel(String.valueOf(Math.round(item.fiber*multiplier))+" g ("+getDV(item.fiber*multiplier,Main.user.getFiber())+"% DV)");
-            protein = new JLabel(String.valueOf(Math.round(item.protein*multiplier))+" g ("+getDV(item.protein*multiplier,Main.user.getProtein())+"% DV)");
-            iron = new JLabel(String.valueOf(Math.round(item.iron*multiplier))+" mg ("+getDV(item.iron*multiplier,Main.user.getIron())+"% DV)");
-            calcium = new JLabel(String.valueOf(Math.round(item.calcium*multiplier))+" mg ("+getDV(item.cholesterol*multiplier,Main.user.getCholesterol())+"% DV)");
-            sodium = new JLabel(String.valueOf(Math.round(item.sodium*multiplier))+" mg ("+getDV(item.sodium*multiplier,Main.user.getCholesterol())+"% DV)");
+            fiber =  new JLabel(String.valueOf(Math.round(item.fiber*multiplier))+" g "+getDV(item.fiber*multiplier,Main.user.preferences.fiberGoal));
+            protein = new JLabel(String.valueOf(Math.round(item.protein*multiplier))+" g "+getDV(item.protein*multiplier,(double)Main.user.preferences.macros[2]*Main.user.preferences.calorieGoal/400));
+            iron = new JLabel(String.valueOf(Math.round(item.iron*multiplier))+" mg "+getDV(item.iron*multiplier,Main.user.preferences.ironGoal));
+            calcium = new JLabel(String.valueOf(Math.round(item.calcium*multiplier))+"mg "+getDV(item.calcium*multiplier,Main.user.preferences.calciumGoal));
+            sodium = new JLabel(String.valueOf(Math.round(item.sodium*multiplier))+" mg "+getDV(item.sodium*multiplier,Main.user.preferences.sodiumGoal));
         }
 
     }

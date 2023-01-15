@@ -158,7 +158,7 @@ public class Meal {
         for (int i = 0; i < items.size(); i++) {
             for (int j = 0; j < Main.items.size(); j++) {
                 if (Main.items.get(j).name.equals(items.get(i))) {
-                    totalCholesterol += size.get(i) * Main.items.get(j).sodium;
+                    totalCholesterol += size.get(i) * Main.items.get(j).cholesterol;
                     break;
                 }
             }

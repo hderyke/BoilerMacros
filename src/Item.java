@@ -26,7 +26,7 @@ public class Item {
 
      public int calcium;
 
-     public int iron;
+     public double iron;
 
      public String location;
 
@@ -63,6 +63,10 @@ public class Item {
           this.calcium = calcium;
           this.iron = iron;
           type = "side";
+
+          this.calcium = this.calcium*13;
+
+          this.iron = this.iron*19/100;
 
           for(String term : Main.entreeKeywords){
               if(ingredients.toLowerCase().contains(term)){

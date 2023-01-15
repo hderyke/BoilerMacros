@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +17,8 @@ public class Main extends JComponent implements Runnable{
     //GUI stuff
     JFrame frame;
     Container content;
+
+    static final String date = String.valueOf(LocalDateTime.now().toLocalDate());
 
     public static final String[] entreeKeywords = new String[]{"eggs","chicken","beef","pork","pasta","pizza","sausage","burger","patty","fish","shrimp","crab","turkey"};// keywords for sorting foods into "entree" catagory,basically high protein foods
     public static final String[] drinkKeywords = new String[]{"juice","milk"};
@@ -169,12 +172,10 @@ public class Main extends JComponent implements Runnable{
                 if (e.getSource() instanceof JButton && mealScreen.isVisible()) {//weird conditions to specify the nutrition button
                         if (((JButton) e.getSource()).getText().equals("More nutrition info")) {
                             if (((JButton) e.getSource()).getParent() instanceof ItemPanel) {
-                                nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item, actionListener);// adds nutrition window
+                                nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item, actionListener,itemListener,1);// adds nutrition window
+                                nutritionWindow.multiplierBox.setSelectedItem(1.0);
 
                             }
-                        } else if (((JButton) e.getSource()).getParent().getLayout() instanceof GridLayout) {
-                            //TODO: make the multiplier button work or add a combo box idk
-
                         }
                     }
 
@@ -243,7 +244,6 @@ public class Main extends JComponent implements Runnable{
 
             }if(deleteButtons.contains(e.getSource())){
                 content.repaint();
-                System.out.println(user.meals[Arrays.asList(new String[]{"Breakfast","Lunch","Dinner"}).indexOf(mealHeader.getText())].items.get(deleteButtons.indexOf(e.getSource())));
                 innerPanel.remove(((JButton)e.getSource()));
                 innerPanel.remove(innerPanel.getComponent(deleteButtons.indexOf(e.getSource())+1));
                 itemTotalSizes.remove(deleteButtons.indexOf(e.getSource()));
@@ -278,6 +278,11 @@ public class Main extends JComponent implements Runnable{
                 }
                 preferencesScreen.add(units);
                 content.repaint();
+            }else if(((JComboBox)e.getSource()).getParent().getLayout() instanceof  GridLayout && e.getStateChange() ==2){
+                content.repaint();
+                nutritionWindow.dispose();
+                double flint = nutritionWindow.multiplierBox.getSelectedIndex();
+                nutritionWindow = new NutritionWindow(nutritionWindow.item,actionListener,itemListener,nutritionWindow.multiplier*nutritionWindow.servingUnits[nutritionWindow.multiplierBox.getSelectedIndex()]);
             }
 
         }
@@ -662,6 +667,16 @@ public class Main extends JComponent implements Runnable{
     JLabel sugar;
     JLabel sodium;
     JLabel cholesterol;
+    JPanel breakfastCaloriesPanel;
+    JPanel lunchCaloriesPanel;
+    JPanel dinnerCaloriesPanel;
+
+    JPanel totalCalories;
+    JPanel carbsPanel;
+    JPanel fatPanel;
+    JPanel proteinPanel;
+
+
 
 
 
@@ -756,16 +771,13 @@ public class Main extends JComponent implements Runnable{
     boolean deleteMode = true;
 
 
-
-
-
-
     public static ArrayList<Item> items = new ArrayList<>();
     static User user;
 
     public static void main(String[] args) {
 
         try {
+            System.out.print(date);
             //adding food to item list
             BufferedReader listedReader = new BufferedReader(new FileReader("storage/fooditems/listedfoods.txt"));
             while (true) {
@@ -839,9 +851,9 @@ public class Main extends JComponent implements Runnable{
         }
 
        //buttons
-        meal1 = new JButton("FirstMeal");
-        meal2 = new JButton("Second meal");
-        meal3 = new JButton("Third meal");
+        meal1 = new JButton("Breakfast");
+        meal2 = new JButton("Lunch");
+        meal3 = new JButton("Dinner");
         preferencesButton = new JButton("...");
         settingsButton = new JButton("Settings");
 
@@ -852,12 +864,20 @@ public class Main extends JComponent implements Runnable{
         fat = new JLabel(user.getFat()+"g fat");
         protein = new JLabel(user.getProtein()+"g protein");
         fiber = new JLabel("Fiber: "+user.getFiber()+"g");
-        calcium = new JLabel("Calcium: "+user.getCalcium()+"% DV");
-        iron = new JLabel("Iron: "+user.getIron()+"%DV");
+        calcium = new JLabel("Calcium: "+user.getCalcium()+"mg");
+        iron = new JLabel("Iron: "+user.getIron()+"mg");
         sugar = new JLabel("Sugar: "+user.getSugar()+"g");
         sodium = new JLabel("Sodium: "+user.getSodium()+"mg");
         cholesterol = new JLabel("Cholesterol: "+user.getCholesterol()+"mg");
         title = new JLabel(greeting + "."); //rename later
+        breakfastCaloriesPanel = new JPanel();
+        lunchCaloriesPanel = new JPanel();
+        dinnerCaloriesPanel = new JPanel();
+        totalCalories = new JPanel();
+        carbsPanel = new JPanel();
+        fatPanel = new JPanel();
+        proteinPanel = new JPanel();
+
 
 
         meal1.setLocation(60,450);
@@ -865,7 +885,7 @@ public class Main extends JComponent implements Runnable{
         meal3.setLocation(60,650);
         preferencesButton.setBounds(400,20,70,40);
         settingsButton.setBounds(50,20,70,40);
-        calories.setBounds(230,100,200,100);
+        calories.setBounds(230,70,200,100);
         carbs.setBounds(110,160,110,110);
         fat.setBounds(220,160,170,110);
         protein.setBounds(330,160,110,110);
@@ -875,12 +895,31 @@ public class Main extends JComponent implements Runnable{
         sugar.setBounds(280,290,170,50);
         sodium.setBounds(280,330,170,50);
         cholesterol.setBounds(280,370,220,50);
+        try {
+            breakfastCaloriesPanel.setBounds(70, 145, 350 * user.meals[0].getCalories() / user.preferences.calorieGoal, 30);
+            lunchCaloriesPanel.setBounds(70 + breakfastCaloriesPanel.getWidth(), 145, 350 * user.meals[1].getCalories() / user.preferences.calorieGoal, 30);
+            dinnerCaloriesPanel.setBounds(70 + lunchCaloriesPanel.getWidth() + breakfastCaloriesPanel.getWidth(), 145, 350 * user.meals[2].getCalories() / user.preferences.calorieGoal, 30);
+            carbsPanel.setBounds(70,240, (int) (350*user.getProtein()/(user.getCarbs()+user.getFat()+user.getProtein())),30);
+            fatPanel.setBounds(70+(int) (350*user.getCarbs()/(user.getCarbs()+user.getFat()+user.getProtein())),240, (int) (350*user.getFat()/(user.getCarbs()+user.getFat()+user.getProtein())),30);
+            proteinPanel.setBounds(70+(int) (350*user.getFat()/(user.getCarbs()+user.getFat()+user.getProtein()))+(int) (350*user.getCarbs()/(user.getCarbs()+user.getFat()+user.getProtein())),240, (int) (350*user.getProtein()/(user.getCarbs()+user.getFat()+user.getProtein())),30);
+        }catch(NullPointerException e){
+
+        }
+        totalCalories.setBounds(70,145,350,30);
 
         preferencesButton.setFont(new Font("Serif", Font.BOLD, 15));
         calories.setFont(new Font("Serif", Font.BOLD, 20));
         carbs.setFont(new Font("Serif", Font.BOLD, 20));
         fat.setFont(new Font("Serif", Font.BOLD, 20));
         protein.setFont(new Font("Serif", Font.BOLD, 20));
+        breakfastCaloriesPanel.setBackground(Color.ORANGE);
+        lunchCaloriesPanel.setBackground(Color.RED);
+        dinnerCaloriesPanel.setBackground(Color.GREEN);
+        totalCalories.setBackground(Color.DARK_GRAY);
+        carbsPanel.setBackground(Color.cyan);
+        fatPanel.setBackground(Color.yellow);
+        proteinPanel.setBackground(Color.BLUE);
+
 
         fiber.setFont(new Font("Serif", Font.BOLD, 20));
         calcium.setFont(new Font("Serif", Font.BOLD, 20));
@@ -901,10 +940,10 @@ public class Main extends JComponent implements Runnable{
         meal1.setForeground(Color.BLACK);
         meal2.addActionListener(actionListener);
         meal2.setBackground(Color.BLUE);
-        meal2.setForeground(Color.RED);
+        meal2.setForeground(Color.BLACK);
         meal3.addActionListener(actionListener);
-        meal3.setBackground(Color.BLUE);
-        meal3.setForeground(Color.PINK);
+        meal3.setBackground(Color.DARK_GRAY);
+        meal3.setForeground(Color.BLACK);
         preferencesButton.addActionListener(actionListener);
         settingsButton.addActionListener(actionListener);
 
@@ -925,11 +964,18 @@ public class Main extends JComponent implements Runnable{
         mainScreen.add(cholesterol);
 
         mainScreen.add(title);
+        mainScreen.add(breakfastCaloriesPanel);
+        mainScreen.add(lunchCaloriesPanel);
+        mainScreen.add(dinnerCaloriesPanel);
+        mainScreen.add(totalCalories);
+        mainScreen.add(carbsPanel);
+        mainScreen.add(fatPanel);
+        mainScreen.add(proteinPanel);
 
         //greeting
         title.setFont(new Font("Serif", Font.BOLD, 34));//good day sir
         title.setSize(550, 175);
-        title.setLocation(50, 20);
+        title.setLocation(50, 0);
 
 
         content.add(mainScreen);
@@ -1212,7 +1258,7 @@ public class Main extends JComponent implements Runnable{
         totalsPanel = new JPanel();
         slider = new JSlider(Adjustable.VERTICAL,0,440,0);
         searchBar = new JTextField();
-        this.diningHall = new JLabel("1/19/23                   "+hall.name);//to change based in dining hall
+        this.diningHall = new JLabel(date.substring(5,7)+"/"+date.substring(8,10)+"/"+date.substring(2,4)+"                  "+hall.name);//to change based in dining hall
         entreePanel = new JPanel(new BorderLayout());
         sidesPanel = new JPanel(new BorderLayout());
         drinksPanel = new JPanel(new BorderLayout());

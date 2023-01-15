@@ -1,3 +1,3 @@
 henry
-peanuts-gluten,0.66,2500,63,31,6,-1,-1,21,20,30,30,false,false,false,false
-[Wiley-Hash Brown-0.25][Earhart][Ford]
+peanuts-gluten,0.16,2000,35,30,35,-1,1300,21,20,-1,-1,true,false,false,false
+[Wiley-Scrambled Eggs-2.25-Smokey Links-0.25-Peach Slices-0.25-Hash Brown-1.25][Wiley][Wiley]
