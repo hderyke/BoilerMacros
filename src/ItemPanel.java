@@ -25,6 +25,8 @@ public class ItemPanel extends JPanel {
 
     MouseListener mouseListener;
 
+    boolean restricted;
+
 
 
 
@@ -70,6 +72,8 @@ public class ItemPanel extends JPanel {
         proteinLabel.setForeground(Color.BLUE);
 
 
+
+
         coords.add(itemName.getX()+","+itemName.getY());
         setSize(160,140);
         setBackground(Color.WHITE);
@@ -77,6 +81,17 @@ public class ItemPanel extends JPanel {
         setLocation(x,y);
         this.x = x;
         this.y = y;
+
+        for(int i = 0; i < Main.user.preferences.allergies.size(); i++){
+            for(int j = 0; j < item.ingredients.length; j++){
+                if(item.ingredients[j].contains(Main.user.preferences.allergies.get(i))){
+                    setBackground(new Color(230,200,200));
+                    moreInfo.setBackground(Color.lightGray);
+                    restricted = true;
+                    break;
+                }
+            }
+        }
 
 
         add(itemName);

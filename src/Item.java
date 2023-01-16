@@ -31,17 +31,14 @@ public class Item {
      public String location;
 
 
-     public boolean isVegetarian;
+     public boolean isVegetarian = false;
 
-     public boolean isVegan;
+     public boolean isVegan = false ;
 
-     public boolean hasDairy;
+     public boolean hasDairy = false ;
 
-     public boolean hasGluten;
+     public boolean hasGluten = false;
 
-     public boolean hasSoy;
-
-     public boolean hasFish;
 
      public String[] ingredients;
 
@@ -62,11 +59,13 @@ public class Item {
           this.protein = protein;
           this.calcium = calcium;
           this.iron = iron;
-          type = "side";
+          type = "side";;
 
           this.calcium = this.calcium*13;
 
           this.iron = this.iron*19/100;
+
+          this.ingredients = ingredients.split("-");
 
           for(String term : Main.entreeKeywords){
               if(ingredients.toLowerCase().contains(term)){
@@ -74,7 +73,7 @@ public class Item {
                   break;
               }
           }for(String term : Main.drinkKeywords){
-             if(ingredients.toLowerCase().contains(term)){
+             if(name.toLowerCase().contains(term)){
                  type = "drink";
                  break;
              }

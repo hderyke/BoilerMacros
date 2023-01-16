@@ -1,15 +1,13 @@
-Scrambled Eggs,0.5 cups,160,11,2.5,310,420,3,0,0,12,4,6,tfttt,eggs-salt-preservatives-chicken,Wiley-Classics-b
+Scrambled Eggs,0.5 cups,160,11,2.5,310,420,3,0,0,12,4,6,tfttt,eggs-salt-preservatives-milk-chicken,Wiley-Classics-b
 Smokey Links,2 Each Serving,181,16,5,35,540,5,1,0,5,6,2,fffff,Pork-Mechanically Separated Turkey-Water-Corn Syrup-Salt,Wiley-Classics-b
 Hash Brown,1 Each,76,3,0,0,210,11,0,1,0,0,0,ttfff,Potatoes-Vegetable Oil,Wiley-Classics-b
 Peach Slices,0.5 cups,37,0,0,0,0,10,9,0,0,0,2,ttfff,Sliced Peaches,Wiley-Fresh Tastes-b
-Zucchini Break,1 slice,243,11,1,25,180,33,21,0,2,2,6,ttfff,sugar-zucchini-oil-flour,Wiley-Delectables-b
+Zucchini BreaD,1 slice,243,11,1,25,180,33,21,0,2,2,6,ttfff,sugar-zucchini-oil-flour,Wiley-Delectables-b
 Flame Grilled Chicken Burger,1 each,195,14,3.5,95,530,0,0,0,18,0,10,fffff,chicken-Dark meat-seasoning-onion,Wiley-Open Flame-l
-cum Burger,1 each,195,14,3.5,95,530,0,0,0,18,0,10,fffff,chicken-Dark meat-seasoning-onion,Wiley-Open Flame-d
-cum fried,1 each,195,14,3.5,95,530,0,0,0,18,0,10,fffff,chicken-Dark meat-seasoning-onion,Ford-Open Flame-d
 Breaded Pork Tenderloin,1 each,213,6,2,30,590,22,0,0,17,4,2,fffff,pork-bread-oil,Wiley-Open Flame-d
 Italian Meatloaf,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,beef-tomato-salt,Wiley-Classics-d
 Italian Meatloaf,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,beef-tomato-salt,Wiley-Classics-d
 Italian Meatloaf,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,beef-tomato-salt,Wiley-Classics-d
-a side,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,liberal vegan food,Wiley-Classics-b
-a side2,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,liberal vegan food,Wiley-Classics-b
-a side3,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,liberal vegan food,Wiley-Classics-b
+a side,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,liberal vegan food,Wiley-Classics-ld
+a side2,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,liberal vegan food,Wiley-Classics-ld
+a side3,1 slice,377,35,11,115,840,12,0,1,24,20,15,fffff,liberal vegan food,Wiley-Classics-ld

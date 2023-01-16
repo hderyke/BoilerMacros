@@ -104,6 +104,7 @@ public class Main extends JComponent implements Runnable{
                         return;
                     }
                 }
+
                 writeFiles();// updates preference and meal info
                 content.removeAll();
                 frame.repaint();
@@ -172,8 +173,9 @@ public class Main extends JComponent implements Runnable{
                 if (e.getSource() instanceof JButton && mealScreen.isVisible()) {//weird conditions to specify the nutrition button
                         if (((JButton) e.getSource()).getText().equals("More nutrition info")) {
                             if (((JButton) e.getSource()).getParent() instanceof ItemPanel) {
-                                nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item, actionListener,itemListener,1);// adds nutrition window
-                                nutritionWindow.multiplierBox.setSelectedItem(1.0);
+                                content.repaint();
+                                nutritionWindow = new NutritionWindow(((ItemPanel) ((JButton) e.getSource()).getParent()).item, actionListener,itemListener,3);// adds nutrition window
+
 
                             }
                         }
@@ -242,17 +244,50 @@ public class Main extends JComponent implements Runnable{
                     }
                 }
 
-            }if(deleteButtons.contains(e.getSource())){
+            }if(e.getSource().equals(restrictionDropdown)||e.getSource().equals(restrictionsField)){
+                restrictionDropdown.repaint();
+                    user.preferences.allergies.remove(restrictionDropdown.getSelectedItem().toString());
+
+
+            }
+            if (deleteButtons != null){
+            if(deleteButtons.contains(e.getSource())) {
                 content.repaint();
-                innerPanel.remove(((JButton)e.getSource()));
-                innerPanel.remove(innerPanel.getComponent(deleteButtons.indexOf(e.getSource())+1));
+                innerPanel.remove(((JButton) e.getSource()));
+                innerPanel.remove(innerPanel.getComponent(deleteButtons.indexOf(e.getSource()) + 1));
                 itemTotalSizes.remove(deleteButtons.indexOf(e.getSource()));
-                user.meals[Arrays.asList(new String[]{"Breakfast","Lunch","Dinner"}).indexOf(mealHeader.getText())].items.remove(deleteButtons.indexOf(e.getSource()));
-                user.meals[Arrays.asList(new String[]{"Breakfast","Lunch","Dinner"}).indexOf(mealHeader.getText())].size.remove(deleteButtons.indexOf(e.getSource()));
+                user.meals[Arrays.asList(new String[]{"Breakfast", "Lunch", "Dinner"}).indexOf(mealHeader.getText())].items.remove(deleteButtons.indexOf(e.getSource()));
+                user.meals[Arrays.asList(new String[]{"Breakfast", "Lunch", "Dinner"}).indexOf(mealHeader.getText())].size.remove(deleteButtons.indexOf(e.getSource()));
                 deleteButtons.remove(deleteButtons.indexOf(e.getSource()));
                 writeFiles();
                 readFiles();
                 content.repaint();
+            }if(e.getSource().equals(search)){
+                    for(int i = 0; i < itemPanelArr.size(); i++){
+                        if(search.getSelectedItem().equals(itemPanelArr.get(i).item.name)) {
+                            switch (itemPanelArr.get(i).item.type) {
+                                case "entree":
+                                    slider.setValue(110);
+                                    entreesSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                    break;
+                                case "side":
+                                    slider.setValue(210);
+                                    sidesSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                    break;
+                                case "drink":
+                                    slider.setValue(310);
+                                    drinkSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                    break;
+                                case "dessert":
+                                    slider.setValue(410);
+                                    dessertSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                    break;
+
+                            }
+                        }
+                    }
+
+                }
 
             }
 
@@ -279,10 +314,17 @@ public class Main extends JComponent implements Runnable{
                 preferencesScreen.add(units);
                 content.repaint();
             }else if(((JComboBox)e.getSource()).getParent().getLayout() instanceof  GridLayout && e.getStateChange() ==2){
-                content.repaint();
-                nutritionWindow.dispose();
-                double flint = nutritionWindow.multiplierBox.getSelectedIndex();
-                nutritionWindow = new NutritionWindow(nutritionWindow.item,actionListener,itemListener,nutritionWindow.multiplier*nutritionWindow.servingUnits[nutritionWindow.multiplierBox.getSelectedIndex()]);
+
+                if(nutritionWindow != null&&e.getStateChange() == ItemEvent.DESELECTED&&e.getSource().equals(nutritionWindow.multiplierBox)) {
+
+                    content.repaint();
+                    content.remove(nutritionWindow);
+                    Item item = nutritionWindow.item;
+                    int index = nutritionWindow.multiplierBox.getSelectedIndex();
+                    nutritionWindow.dispose();
+                    nutritionWindow = new NutritionWindow(item,actionListener,itemListener,index);
+                }
+
             }
 
         }
@@ -531,10 +573,54 @@ public class Main extends JComponent implements Runnable{
                             }
 
                         }
+                    }if(e.getSource().equals(search)){
+                        for(int i = 0; i < itemPanelArr.size(); i++){
+                            if(search.getSelectedItem().equals(itemPanelArr.get(i).item.name)) {
+                                switch (itemPanelArr.get(i).item.type) {
+                                    case "entree":
+                                        slider.setValue(110);
+                                        entreesSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                        break;
+                                    case "side":
+                                        slider.setValue(210);
+                                        sidesSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                        break;
+                                    case "drink":
+                                        slider.setValue(310);
+                                        drinkSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                        break;
+                                    case "dessert":
+                                        slider.setValue(410);
+                                        dessertSlider.setValue(100*itemPanelArr.get(i).x / 140);
+                                        break;
+
+                                }
+                            }
+                        }
+
+                }if(e.getSource().equals(restrictionDropdown.getEditor().getEditorComponent())){
+                        String term = (String) restrictionDropdown.getEditor().getItem();
+                    if(term.indexOf(" ") == 0|| term.equals("")){
+                        return;
                     }
+                    preferencesScreen.repaint();
+                    preferencesScreen.remove(restrictionDropdown);
+                    if(user.preferences.allergies.contains(term)){
+                        user.preferences.allergies.remove(((String)restrictionDropdown.getEditor().getItem()));
+                        content.remove(preferencesScreen);
+                        preferencesScreen();
+                        content.add(preferencesScreen);
+                    }else{
+                        user.preferences.allergies.add((String) restrictionDropdown.getEditor().getItem());
+                        restrictionDropdown.addItem((String) restrictionDropdown.getEditor().getItem());
 
 
+                    }
+                    restrictionDropdown.setSelectedItem("");
+                    preferencesScreen.add(restrictionDropdown);
+                    restrictionDropdown.doLayout();
 
+                }
 
             }
 
@@ -557,7 +643,14 @@ public class Main extends JComponent implements Runnable{
         @Override
         public void mousePressed(MouseEvent e) {
             if(e.getSource() instanceof JPanel) {
-                window = new SelectionWindow(((ItemPanel) e.getSource()).item, ((ItemPanel) e.getSource()).portionsize, actionListener, itemListener);
+                if(((ItemPanel)e.getSource()).restricted){
+                    if(JOptionPane.showConfirmDialog(mealScreen,"The item you are about to add contains bad","WARNING", JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE)== 0){
+                        window = new SelectionWindow(((ItemPanel) e.getSource()).item, ((ItemPanel) e.getSource()).portionsize, actionListener, itemListener);
+                    }
+                }else{
+                    window = new SelectionWindow(((ItemPanel) e.getSource()).item, ((ItemPanel) e.getSource()).portionsize, actionListener, itemListener);
+                }
+
             }
 
 
@@ -620,20 +713,29 @@ public class Main extends JComponent implements Runnable{
                     }
 
                 }
-            }else if(e.getSource().equals(sidesSlider)){
-                for(Component component : content.getComponents()){
-                    if(component instanceof ItemPanel) {
+            }else if(e.getSource().equals(sidesSlider)) {
+                for (Component component : content.getComponents()) {
+                    if (component instanceof ItemPanel) {
                         if (((ItemPanel) component).item.type.equals("side")) {
-                            component.setLocation(((ItemPanel) component).x - sidesSlider.getValue(), ((ItemPanel) component).y-slider.getValue());
+                            component.setLocation(((ItemPanel) component).x - sidesSlider.getValue(), ((ItemPanel) component).y - slider.getValue());
                         }
                     }
 
                 }
+            }else if(e.getSource().equals(drinkSlider)){
+                    for(Component component : content.getComponents()){
+                        if(component instanceof ItemPanel) {
+                            if (((ItemPanel) component).item.type.equals("drink")) {
+                                component.setLocation(((ItemPanel) component).x - drinkSlider.getValue(), ((ItemPanel) component).y-slider.getValue());
+                            }
+                        }
+
+                    }
             }else if(e.getSource().equals(dessertSlider)){
                 for(Component component : content.getComponents()){
                     if(component instanceof ItemPanel) {
                         if (((ItemPanel) component).item.type.equals("dessert")) {
-                            component.setLocation(((ItemPanel) component).x - sidesSlider.getValue(), ((ItemPanel) component).y-slider.getValue());
+                            component.setLocation(((ItemPanel) component).x - dessertSlider.getValue(), ((ItemPanel) component).y-slider.getValue());
                         }
                     }
 
@@ -675,6 +777,13 @@ public class Main extends JComponent implements Runnable{
     JPanel carbsPanel;
     JPanel fatPanel;
     JPanel proteinPanel;
+
+
+    JLabel[] macroLabels;
+    ArrayList<JLabel> tickArr;
+
+    JLabel totalCaloriesLabel;
+
 
 
 
@@ -726,6 +835,7 @@ public class Main extends JComponent implements Runnable{
     JButton addSugarGoal;
     JButton addSodiumGoal;
     JButton addCholesterolGoal;
+    JPanel boxPanel;
     Color grey;
 
     //meal screen
@@ -769,6 +879,9 @@ public class Main extends JComponent implements Runnable{
     JSlider totalsScroller;
     JLabel totalsLabel;
     boolean deleteMode = true;
+    JComboBox<String> search;
+
+
 
 
     public static ArrayList<Item> items = new ArrayList<>();
@@ -830,7 +943,6 @@ public class Main extends JComponent implements Runnable{
     }
 
 
-
     public void mainScreen() {
         readFiles();
         mainScreen = new JPanel();
@@ -861,7 +973,7 @@ public class Main extends JComponent implements Runnable{
         //text fields
         calories = new JLabel(user.getCalories()+" kcals");
         carbs = new JLabel(user.getCarbs()+"g carbs");
-        fat = new JLabel(user.getFat()+"g fat");
+        fat = new JLabel(String.format(String.valueOf(user.getFat()).substring(0,4))+"g fat");
         protein = new JLabel(user.getProtein()+"g protein");
         fiber = new JLabel("Fiber: "+user.getFiber()+"g");
         calcium = new JLabel("Calcium: "+user.getCalcium()+"mg");
@@ -877,6 +989,7 @@ public class Main extends JComponent implements Runnable{
         carbsPanel = new JPanel();
         fatPanel = new JPanel();
         proteinPanel = new JPanel();
+        totalCaloriesLabel = new JLabel(user.preferences.calorieGoal+"\n");
 
 
 
@@ -885,21 +998,22 @@ public class Main extends JComponent implements Runnable{
         meal3.setLocation(60,650);
         preferencesButton.setBounds(400,20,70,40);
         settingsButton.setBounds(50,20,70,40);
-        calories.setBounds(230,70,200,100);
-        carbs.setBounds(110,160,110,110);
-        fat.setBounds(220,160,170,110);
-        protein.setBounds(330,160,110,110);
+        calories.setBounds(200,78,200,100);
+        carbs.setBounds(95,160,110,110);
+        fat.setBounds(207,160,170,110);
+        protein.setBounds(318,160,110,110);
         fiber.setBounds(70,290,170,50);
         calcium.setBounds(70,330,200,50);
         iron.setBounds(70,370,200,50);
         sugar.setBounds(280,290,170,50);
         sodium.setBounds(280,330,170,50);
         cholesterol.setBounds(280,370,220,50);
+        totalCaloriesLabel.setBounds(400,80,100,100);
         try {
             breakfastCaloriesPanel.setBounds(70, 145, 350 * user.meals[0].getCalories() / user.preferences.calorieGoal, 30);
             lunchCaloriesPanel.setBounds(70 + breakfastCaloriesPanel.getWidth(), 145, 350 * user.meals[1].getCalories() / user.preferences.calorieGoal, 30);
             dinnerCaloriesPanel.setBounds(70 + lunchCaloriesPanel.getWidth() + breakfastCaloriesPanel.getWidth(), 145, 350 * user.meals[2].getCalories() / user.preferences.calorieGoal, 30);
-            carbsPanel.setBounds(70,240, (int) (350*user.getProtein()/(user.getCarbs()+user.getFat()+user.getProtein())),30);
+            carbsPanel.setBounds(70,240, (int) (350*user.getCarbs()/(user.getCarbs()+user.getFat()+user.getProtein())),30);
             fatPanel.setBounds(70+(int) (350*user.getCarbs()/(user.getCarbs()+user.getFat()+user.getProtein())),240, (int) (350*user.getFat()/(user.getCarbs()+user.getFat()+user.getProtein())),30);
             proteinPanel.setBounds(70+(int) (350*user.getFat()/(user.getCarbs()+user.getFat()+user.getProtein()))+(int) (350*user.getCarbs()/(user.getCarbs()+user.getFat()+user.getProtein())),240, (int) (350*user.getProtein()/(user.getCarbs()+user.getFat()+user.getProtein())),30);
         }catch(NullPointerException e){
@@ -908,7 +1022,7 @@ public class Main extends JComponent implements Runnable{
         totalCalories.setBounds(70,145,350,30);
 
         preferencesButton.setFont(new Font("Serif", Font.BOLD, 15));
-        calories.setFont(new Font("Serif", Font.BOLD, 20));
+        calories.setFont(new Font("Serif", Font.BOLD, 25));
         carbs.setFont(new Font("Serif", Font.BOLD, 20));
         fat.setFont(new Font("Serif", Font.BOLD, 20));
         protein.setFont(new Font("Serif", Font.BOLD, 20));
@@ -927,22 +1041,24 @@ public class Main extends JComponent implements Runnable{
         sugar.setFont(new Font("Serif", Font.BOLD, 20));
         sodium.setFont(new Font("Serif", Font.BOLD, 20));
         cholesterol.setFont(new Font("Serif", Font.BOLD, 20));
+        totalCaloriesLabel.setFont(new Font(Font.SERIF,Font.BOLD,20));
 
         meal1.setSize(350,90);
         meal2.setSize(350,90);
         meal3.setSize(350,90);
-
-
+        meal1.setOpaque(true);
+        meal2.setOpaque(true);
+        meal3.setOpaque(true);
 
 
         meal1.addActionListener(actionListener);
-        meal1.setBackground(Color.BLUE);
+        meal1.setBackground(Color.ORANGE);
         meal1.setForeground(Color.BLACK);
         meal2.addActionListener(actionListener);
-        meal2.setBackground(Color.BLUE);
+        meal2.setBackground(Color.RED);
         meal2.setForeground(Color.BLACK);
         meal3.addActionListener(actionListener);
-        meal3.setBackground(Color.DARK_GRAY);
+        meal3.setBackground(Color.GREEN);
         meal3.setForeground(Color.BLACK);
         preferencesButton.addActionListener(actionListener);
         settingsButton.addActionListener(actionListener);
@@ -971,6 +1087,30 @@ public class Main extends JComponent implements Runnable{
         mainScreen.add(carbsPanel);
         mainScreen.add(fatPanel);
         mainScreen.add(proteinPanel);
+        mainScreen.add(totalCaloriesLabel);
+
+        tickArr = new ArrayList<>();
+
+        for(int i = 0; i < 2; i++){
+            tickArr.add(new JLabel("|"));
+            tickArr.get(i).setSize(100,100);
+            tickArr.get(i).setFont(new Font(Font.SERIF,Font.BOLD,34));
+            content.add(tickArr.get(i));
+        }
+        tickArr.get(0).setLocation(70+user.preferences.macros[0]*350/100,202);
+        tickArr.get(1).setLocation(70+user.preferences.macros[0]*350/100+user.preferences.macros[1]*350/100,202);
+
+        macroLabels = new JLabel[]{new JLabel(String.valueOf(user.meals[0].getCalories())),new JLabel(String.valueOf(user.meals[1].getCalories())),new JLabel(String.valueOf(user.meals[2].getCalories()))};
+        macroLabels[0].setBounds(80,147,30,30);
+        macroLabels[1].setBounds(lunchCaloriesPanel.getX()+10,147,30,30);
+        macroLabels[2].setBounds(dinnerCaloriesPanel.getX()+10,147,30,30);
+
+        for(int i = 0; i < 3; i++){
+            macroLabels[i].setFont(new Font(Font.SERIF,Font.BOLD,18));
+            if(!macroLabels[i].getText().equals("0")) {
+                content.add(macroLabels[i]);
+            }
+        }
 
         //greeting
         title.setFont(new Font("Serif", Font.BOLD, 34));//good day sir
@@ -991,7 +1131,8 @@ public class Main extends JComponent implements Runnable{
         preferencesHeader = new JLabel("Preferences");
         backButton = new JButton("<-");
         slider = new JSlider(JSlider.HORIZONTAL,0,100,(int)(user.preferences.portions*100));
-        restrictionDropdown = new JComboBox<>(user.getPreferences().allergies);
+        restrictionDropdown = new JComboBox<>(user.getPreferences().allergies.toArray(new String[user.preferences.allergies.size()]));
+        restrictionDropdown.setSelectedItem("");
         restrictionsField = new JTextField();
         portionSize = new JLabel("Portion Size:");
         calorieGoal = new JLabel("Calorie goal: ");
@@ -1024,6 +1165,9 @@ public class Main extends JComponent implements Runnable{
         glutenBox = new JCheckBox("Gluten");
         dairyBox = new JCheckBox("Dairy");
         grey = new Color(190,190,190);
+        carbsPanel = new JPanel();
+        fatPanel = new JPanel();
+        proteinPanel = new JPanel();
 
 
         unitSwitcher.addActionListener(actionListener);
@@ -1038,6 +1182,7 @@ public class Main extends JComponent implements Runnable{
         sodiumGoalField.addMouseListener(mouseListener);
         ironGoalField.addMouseListener(mouseListener);
         cholesterolGoalField.addMouseListener(mouseListener);
+        restrictionsField.addKeyListener(keyListener);
 
         caloriesGoalField.addFocusListener(focusLister);
         carbRatio.addFocusListener(focusLister);
@@ -1054,13 +1199,14 @@ public class Main extends JComponent implements Runnable{
         carbRatio.addKeyListener(keyListener);
         fatRatio.addKeyListener(keyListener);
         proteinRatio.addKeyListener(keyListener);
-        restrictionDropdown.addKeyListener(keyListener);
+        restrictionDropdown.getEditor().getEditorComponent().addKeyListener(keyListener);
         fiberGoalField.addKeyListener(keyListener);
         calciumGoalField.addKeyListener(keyListener);
         ironGoalField.addKeyListener(keyListener);
         sugarGoalField.addKeyListener(keyListener);
         sodiumGoalField.addKeyListener(keyListener);
         cholesterolGoalField.addKeyListener(keyListener);
+        search.setEditable(true);
 
         //caloriesGoalField.setText(String.valueOf(user.getPreferences().calorieGoal));
         restrictionDropdown.setEditable(true);
@@ -1187,6 +1333,10 @@ public class Main extends JComponent implements Runnable{
         sodiumGoalField.setBounds(350,495,60,20);
         cholesterolGoal.setBounds(270,520,180,20);
         cholesterolGoalField.setBounds(350,520,60,20);
+        carbsPanel.setBounds(100,300,user.preferences.macros[0]*350/100,30);
+        fatPanel.setBounds(100+user.preferences.macros[0]*350/100,300,user.preferences.macros[1]*350/100,30);
+        proteinPanel.setBounds(100+user.preferences.macros[0]*350/100+user.preferences.macros[1]*350/100,300,user.preferences.macros[2]*350/100,30);
+
 
         if(user.preferences.isVegetarian){
             vegetarianBox.setSelected(true);
@@ -1198,7 +1348,9 @@ public class Main extends JComponent implements Runnable{
             dairyBox.setSelected(true);
         }
 
-
+        meal1.setBackground(Color.ORANGE);
+        meal2.setBackground(Color.RED);
+        meal3.setBackground(Color.GREEN);
         caloriesGoalField.setBackground(grey);
         carbRatio.setBackground(grey);
         fatRatio.setBackground(grey);
@@ -1210,12 +1362,14 @@ public class Main extends JComponent implements Runnable{
         sugarGoalField.setBackground(grey);
         sodiumGoalField.setBackground(grey);
         cholesterolGoalField.setBackground(grey);
+        carbsPanel.setBackground(Color.RED);
+        fatPanel.setBackground((Color.GREEN));
+        proteinPanel.setBackground(Color.BLUE);
 
         preferencesScreen.add(preferencesHeader);
         preferencesScreen.add(backButton);
         preferencesScreen.add(slider);
         preferencesScreen.add(restrictionDropdown);
-        preferencesScreen.add(restrictionsField);
         preferencesScreen.add(portionSize);
         preferencesScreen.add(calorieGoal);
         preferencesScreen.add(caloriesGoalField);
@@ -1234,6 +1388,12 @@ public class Main extends JComponent implements Runnable{
         preferencesScreen.add(veganBox);
         preferencesScreen.add(glutenBox);
         preferencesScreen.add(dairyBox);
+        preferencesScreen.add(carbsPanel);
+        preferencesScreen.add(fatPanel);
+        preferencesScreen.add(proteinPanel);
+
+        restrictionDropdown.setLightWeightPopupEnabled(true);
+        restrictionDropdown.doLayout();
 
 
         frame.setVisible(true);
@@ -1251,6 +1411,7 @@ public class Main extends JComponent implements Runnable{
         itemPanelArr = new ArrayList<>();
         backButton = new JButton("<-");
         mealHeader = new JLabel(new String[]{"Breakfast","Lunch","Dinner"}[mealNumber-1]);
+
         EntreeHeader = new JLabel("Entrees");
         sidesHeader = new JLabel("Sides");
         desertsHeader = new JLabel("Dessert");
@@ -1266,23 +1427,56 @@ public class Main extends JComponent implements Runnable{
         itemListPanel = new JPanel();
         totalMealCalories = new JLabel("Total calories:   "+user.meals[mealNumber-1].getCalories());
         totalMealCarbs = new JLabel("Carbs:     "+user.meals[mealNumber-1].getCarbs());
-        totalMealFat = new JLabel("Fat:    "+user.meals[mealNumber-1].getFat());
+        totalMealFat = new JLabel(String.format("Fat:    %4.1f",user.meals[mealNumber-1].getFat()));
         totalMealProtein = new JLabel("Protein:     "+user.meals[mealNumber-1].getProtein());
         moreNutrition = new JButton("More nutrition info...");
         itemTotals = new ArrayList<>();
         itemTotalSizes = new ArrayList<>();
         deleteButton = new JButton("-");
         deleteButtons = new ArrayList<>();
-       // entreesSlider = new JSlider();
-        entreesSlider = new JSlider(JSlider.HORIZONTAL, 0, hall.entrees.size() * 80, 0);
-        sidesSlider = new JSlider(JSlider.HORIZONTAL,0,hall.sides.size()*80,0);
-        drinkSlider = new JSlider(JSlider.HORIZONTAL,0,hall.drinks.size()*80,0);
-        dessertSlider = new JSlider(JSlider.HORIZONTAL,0,hall.desserts.size()*80,0);
+
+        ArrayList<String> itemNames = new ArrayList<>();
+
+        int items = 0;
+
+        for(Item item : hall.entrees){
+            if(item.location.split("-")[2].contains(meal)){
+                items++;
+                itemNames.add(item.name);
+            }
+        } entreesSlider = new JSlider(JSlider.HORIZONTAL, 0, items * 140, 0);
+        items = 0;
+
+        for(Item item : hall.sides){
+            if(item.location.split("-")[2].contains(meal)){
+                items++;
+                itemNames.add(item.name);
+            }
+        } sidesSlider = new JSlider(JSlider.HORIZONTAL, 0, items * 140, 0);
+        items = 0;
+
+        for(Item item : hall.drinks){
+            if(item.location.split("-")[2].contains(meal)){
+                items++;
+                itemNames.add(item.name);
+            }
+        } drinkSlider = new JSlider(JSlider.HORIZONTAL, 0, items * 140, 0);
+        items = 0;
+
+        for(Item item : hall.desserts){
+            if(item.location.split("-")[2].contains(meal)){
+                items++;
+                itemNames.add(item.name);
+            }
+        } dessertSlider = new JSlider(JSlider.HORIZONTAL, 0, items * 140, 0);
+
         innerPanel = new JPanel();
         totalsScroller = new JSlider(JSlider.VERTICAL,0,100,0);
         totalsLabel = new JLabel("Item            # of servings");
 
+        String[] arr = new String[itemNames.size()];
 
+        search = new JComboBox<>(itemNames.toArray(arr));
 
 
 
@@ -1315,6 +1509,7 @@ public class Main extends JComponent implements Runnable{
         innerPanel.setSize(200,400);
         totalsScroller.setBounds(213,30,20,120);
         totalsLabel.setBounds(7,0,200,20);
+        search.setBounds(350,100,125,30);
 
         totalsPanel.setBackground(new Color(200,200,200));
         entreePanel.setBackground(new Color(204,203,143));
@@ -1344,6 +1539,8 @@ public class Main extends JComponent implements Runnable{
         moreNutrition.addActionListener(actionListener);
         deleteButton.addActionListener(actionListener);
         totalsScroller.addChangeListener(changeListener);
+        search.addKeyListener(keyListener);
+        search.addActionListener(actionListener);
 
 
 
@@ -1353,7 +1550,6 @@ public class Main extends JComponent implements Runnable{
         mealScreen.add(backButton);
         mealScreen.add(mealHeader);
         content.add(totalsPanel);
-        mealScreen.add(searchBar);
         mealScreen.add(this.diningHall);
         mealScreen.add(EntreeHeader);
         mealScreen.add(sidesHeader);
@@ -1379,6 +1575,11 @@ public class Main extends JComponent implements Runnable{
         content.add(dessertSlider);
         totalsPanel.add(totalsScroller);
         innerPanel.add(totalsLabel);
+        search.setLightWeightPopupEnabled(true);
+        mealScreen.add(search);
+        search.doLayout();
+
+
 
         ArrayList<ItemPanel> entrees = new ArrayList<>();
         ArrayList<ItemPanel> sides = new ArrayList<>();
@@ -1390,30 +1591,39 @@ public class Main extends JComponent implements Runnable{
             String mealStr = item.location.split("-")[2];
             if(mealStr.contains(meal)) {
                 entrees.add(new ItemPanel(item, (hall.entrees.indexOf(item)-counter) * 170 + 10, 190, mouseListener, actionListener));
-                itemPanelArr.add(entrees.get(entrees.size() - 1));
             }else{
                 counter++;
             }
         }
 
+        counter = 0;
+
         for(Item item: hall.sides){
             String mealStr = item.location.split("-")[2];
             if(mealStr.contains(meal)) {
-                sides.add(new ItemPanel(item, hall.sides.indexOf(item) * 170 + 10, 405, mouseListener, actionListener));
+                sides.add(new ItemPanel(item, (hall.sides.indexOf(item)-counter) * 170 + 10, 405, mouseListener, actionListener));
+            }else{
+                counter++;
             }
         }
 
+        counter = 0;
         for(Item item: hall.drinks){
             String mealStr = item.location.split("-")[2];
             if(mealStr.contains(meal)) {
-                drinks.add(new ItemPanel(item, hall.drinks.indexOf(item) * 170 + 10, 630, mouseListener, actionListener));
+                drinks.add(new ItemPanel(item, (hall.drinks.indexOf(item)-counter) * 170 + 10, 630, mouseListener, actionListener));
+            }else{
+                counter++;
             }
         }
 
+        counter = 0;
         for(Item item: hall.desserts){
             String mealStr = item.location.split("-")[2];
             if(mealStr.contains(meal)) {
-                desserts.add(new ItemPanel(item, hall.desserts.indexOf(item) * 170 + 10, 855, mouseListener, actionListener));
+                desserts.add(new ItemPanel(item, (hall.desserts.indexOf(item)-counter) * 170 + 10, 855, mouseListener, actionListener));
+            }else{
+                counter++;
             }
         }
 
@@ -1445,6 +1655,11 @@ public class Main extends JComponent implements Runnable{
             }
 
         }
+
+        itemPanelArr.addAll(entrees);
+        itemPanelArr.addAll(sides);
+        itemPanelArr.addAll(drinks);
+        itemPanelArr.addAll(desserts);
 
 
 

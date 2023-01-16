@@ -14,7 +14,7 @@ public class DiningHall {
         this.name = name;
         for(Item item: Main.items){
             if(item.location.contains(name)){
-                if(name.equals("Wiley")&&item.location.contains("Delectables")){
+                if(name.contains("Wiley")&&item.location.contains("Delectables")){
                     item.type = "dessert";
                 }
                 switch(item.type){

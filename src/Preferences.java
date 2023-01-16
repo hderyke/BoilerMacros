@@ -1,6 +1,8 @@
+import java.util.ArrayList;
+
 public class Preferences {
 
-    String[] allergies;
+    ArrayList<String> allergies = new ArrayList<>();
 
     double portions;
 
@@ -32,7 +34,14 @@ public class Preferences {
 
     public Preferences(String preferences){
         String[] preferencesArr = preferences.split("\\,");
-        allergies = preferencesArr[0].split("-");
+        try {
+            String[] arr = preferencesArr[0].split("-");
+            for (String term : arr) {
+                allergies.add(term);
+            }
+        }catch(Exception e){
+            allergies = new ArrayList<>();
+        }
         portions = Double.parseDouble(preferencesArr[1]);
         calorieGoal = Integer.parseInt(preferencesArr[2]);
         macros = new int[]{Integer.parseInt(preferencesArr[3]), Integer.parseInt(preferencesArr[4]), Integer.parseInt(preferencesArr[5])};
@@ -78,12 +87,17 @@ public class Preferences {
     }
 @Override
     public String toString(){
-        String allergiesArr = "";
-        for(String item : allergies){
-            allergiesArr += (item +"-");
+    String allergiesArr = "";
+        try {
+            for (String item : allergies) {
+                allergiesArr += (item + "-");
+            }
+            allergiesArr = allergiesArr.substring(0, allergiesArr.length() - 1);
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
-        return(allergiesArr.substring(0,allergiesArr.length()-1)+","+portions+","+calorieGoal+","+macros[0]+","+macros[1]+","+macros[2]+","+fiberGoal+","+calciumGoal+","+ironGoal+","+sugarGoal+","+sodiumGoal+","+cholesterolGoal+","+isVegetarian+","+isVegan+","+isGlutenFree+","+isDairyFree);
+        return(allergiesArr+","+portions+","+calorieGoal+","+macros[0]+","+macros[1]+","+macros[2]+","+fiberGoal+","+calciumGoal+","+ironGoal+","+sugarGoal+","+sodiumGoal+","+cholesterolGoal+","+isVegetarian+","+isVegan+","+isGlutenFree+","+isDairyFree);
     }
 
 
