@@ -1101,9 +1101,9 @@ public class Main extends JComponent implements Runnable{
         tickArr.get(1).setLocation(70+user.preferences.macros[0]*350/100+user.preferences.macros[1]*350/100,202);
 
         macroLabels = new JLabel[]{new JLabel(String.valueOf(user.meals[0].getCalories())),new JLabel(String.valueOf(user.meals[1].getCalories())),new JLabel(String.valueOf(user.meals[2].getCalories()))};
-        macroLabels[0].setBounds(80,147,30,30);
-        macroLabels[1].setBounds(lunchCaloriesPanel.getX()+10,147,30,30);
-        macroLabels[2].setBounds(dinnerCaloriesPanel.getX()+10,147,30,30);
+        macroLabels[0].setBounds(80,147,50,30);
+        macroLabels[1].setBounds(lunchCaloriesPanel.getX()+10,147,50,30);
+        macroLabels[2].setBounds(dinnerCaloriesPanel.getX()+10,147,50,30);
 
         for(int i = 0; i < 3; i++){
             macroLabels[i].setFont(new Font(Font.SERIF,Font.BOLD,18));
@@ -1206,7 +1206,6 @@ public class Main extends JComponent implements Runnable{
         sugarGoalField.addKeyListener(keyListener);
         sodiumGoalField.addKeyListener(keyListener);
         cholesterolGoalField.addKeyListener(keyListener);
-        search.setEditable(true);
 
         //caloriesGoalField.setText(String.valueOf(user.getPreferences().calorieGoal));
         restrictionDropdown.setEditable(true);

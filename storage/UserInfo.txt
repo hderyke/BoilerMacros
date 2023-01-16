@@ -1,3 +1,3 @@
 henry
-beef,0.46,3000,20,40,40,-1,1300,21,20,-1,-1,false,false,true,true
-[Wiley-Hash Brown-1.75-Scrambled Eggs-2.5-2% Milk-2.0-Banana (medium)-1.0][Wiley-Flame Grilled Chicken Burger-2.0-2% Milk-0.25-a side3-5.0][Wiley-2% Milk-2.0-Cottage cheese-0.25-a side2-0.25-Breaded Pork Tenderloin-0.5]
+,0.46,3000,20,40,40,20,1300,21,20,-1,-1,false,false,false,false
+[Wiley-Hash Brown-1.75-Scrambled Eggs-2.5-2% Milk-2.0-Banana (medium)-1.0][Wiley-Flame Grilled Chicken Burger-2.0-2% Milk-0.25][Wiley-2% Milk-2.0-Cottage cheese-0.25-a side2-0.25-Breaded Pork Tenderloin-0.5]

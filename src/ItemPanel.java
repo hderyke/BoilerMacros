@@ -82,7 +82,13 @@ public class ItemPanel extends JPanel {
         this.x = x;
         this.y = y;
 
-        for(int i = 0; i < Main.user.preferences.allergies.size(); i++){
+        if (Main.user.preferences.isVegetarian&&!item.isVegetarian||(Main.user.preferences.isVegan&&!item.isVegan)||(Main.user.preferences.isGlutenFree&& !item.hasGluten)||(Main.user.preferences.isDairyFree&&!item.hasDairy)){
+            setBackground(new Color(230,200,200));
+            moreInfo.setBackground(Color.lightGray);
+            restricted = true;
+        }
+
+        for(int i = 1; i < Main.user.preferences.allergies.size(); i++){
             for(int j = 0; j < item.ingredients.length; j++){
                 if(item.ingredients[j].contains(Main.user.preferences.allergies.get(i))){
                     setBackground(new Color(230,200,200));

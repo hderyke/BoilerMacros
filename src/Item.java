@@ -79,6 +79,11 @@ public class Item {
              }
          }this.location = location;
 
+          isVegetarian = booleans.charAt(0)==('t');
+         isVegan = booleans.charAt(1)==('t');
+         hasGluten = booleans.charAt(2)==('t');
+         hasDairy = booleans.charAt(3)==('t');
+
      }
 
      public String toString(){
