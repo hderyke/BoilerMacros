@@ -67,11 +67,13 @@ public class Item {
 
           this.ingredients = ingredients.split("-");
 
-          for(String term : Main.entreeKeywords){
-              if(ingredients.toLowerCase().contains(term)){
+          if(calories > 150){
+          for(String term : Main.entreeKeywords) {
+              if (ingredients.toLowerCase().contains(term)) {
                   type = "entree";
                   break;
               }
+          }
           }for(String term : Main.drinkKeywords){
              if(name.toLowerCase().contains(term)){
                  type = "drink";

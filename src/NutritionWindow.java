@@ -123,7 +123,7 @@ public class NutritionWindow extends JFrame{
         }
 
         public void calculate(){
-        servingSize.setText(String.valueOf((Double.parseDouble(item.serving.substring(0,item.serving.indexOf(" ")))*servingUnits[multiplier]))+item.serving.substring(item.serving.indexOf(" ")));
+            servingSize.setText(String.valueOf((Double.parseDouble(item.serving.substring(0, item.serving.indexOf(" "))) * servingUnits[multiplier])) + item.serving.substring(item.serving.indexOf(" ")));
 
             calories = new JLabel(String.valueOf((item.calories*servingUnits[multiplier]))+" g");
             fat = new JLabel(String.valueOf(item.fat*servingUnits[multiplier])+" g "+getDV(item.fat*servingUnits[multiplier],(double)Main.user.preferences.macros[2]*Main.user.preferences.calorieGoal/900));

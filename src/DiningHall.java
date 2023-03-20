@@ -14,7 +14,7 @@ public class DiningHall {
         this.name = name;
         for(Item item: Main.items){
             if(item.location.contains(name)){
-                if(name.contains("Wiley")&&item.location.contains("Delectables")){
+                if(item.location.contains("Delectables") || item.location.contains("Cookie Cache") || item.location.contains("Sugar Hill") || item.location.contains("Devonshire Way") || item.name.contains("Muffin")){
                     item.type = "dessert";
                 }
                 switch(item.type){
@@ -33,6 +33,8 @@ public class DiningHall {
             }
         }
     }
+
+
 
 
 }

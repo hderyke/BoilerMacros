@@ -3,14 +3,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
+
 
 public class Main extends JComponent implements Runnable{
 
@@ -103,6 +102,8 @@ public class Main extends JComponent implements Runnable{
                         //TODO: ooga booga
                         return;
                     }
+                }else{
+                    mealScreen = null;
                 }
 
                 writeFiles();// updates preference and meal info
@@ -888,9 +889,19 @@ public class Main extends JComponent implements Runnable{
     static User user;
 
     public static void main(String[] args) {
+   /*     try{
+            String pythonFileDirectory = "./src"; // replace with actual path
+            ProcessBuilder pb = new ProcessBuilder("python3", "scraper.py","https://dining.purdue.edu/menus/Hillenbrand/2023/3/20/Lunch");
+            pb.directory(new File(pythonFileDirectory));
+            Process process = pb.start();
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+*/
 
         try {
-            System.out.print(date);
             //adding food to item list
             BufferedReader listedReader = new BufferedReader(new FileReader("storage/fooditems/listedfoods.txt"));
             while (true) {
@@ -973,7 +984,7 @@ public class Main extends JComponent implements Runnable{
         //text fields
         calories = new JLabel(user.getCalories()+" kcals");
         carbs = new JLabel(user.getCarbs()+"g carbs");
-        fat = new JLabel(String.format(String.valueOf(user.getFat()).substring(0,4))+"g fat");
+        fat = new JLabel(String.format(String.valueOf(user.getFat()).substring(0,3))+"g fat");
         protein = new JLabel(user.getProtein()+"g protein");
         fiber = new JLabel("Fiber: "+user.getFiber()+"g");
         calcium = new JLabel("Calcium: "+user.getCalcium()+"mg");
@@ -1400,7 +1411,46 @@ public class Main extends JComponent implements Runnable{
     }
 
     public void mealScreen(int mealNumber,String diningHall){
-        String meal = new String[]{"b","l","d"}[mealNumber-1];
+        String meal = new String[]{"b","l","d","u"}[mealNumber-1];
+        boolean alreadyRead = false;
+        for(Item item : Main.items){
+            System.out.println("item:"+item.location);
+            if((item.location.split("-"))[0].equals(diningHall) && !Objects.equals(item.location.split("-")[1], "u") && Objects.equals(item.location.split("-")[2],meal)){
+                alreadyRead = true;
+                break;
+            }
+        }
+
+            if((!alreadyRead && mealScreen == null) ) {
+                try {
+
+                    String[] meals = new String[]{"Breakfast", "Lunch", "Dinner"};
+                    String pythonFileDirectory = "./src"; // replace with actual path
+                    ProcessBuilder pb = new ProcessBuilder("python3", "scraper.py", "https://dining.purdue.edu/menus/" + diningHall + "/"+("20"+date.substring(2,4)+"/"+date.substring(5,7)+"/"+date.substring(8,10))+"/" + meals[mealNumber - 1]);
+                    pb.directory(new File(pythonFileDirectory));
+                    Process process = pb.start();
+                    process.waitFor();
+                    BufferedReader listedReader = new BufferedReader(new FileReader("storage/fooditems/listedfoods.txt"));
+                    while (true) {
+                        String line = listedReader.readLine();
+                        if (line == null) {
+                            break;
+                        }
+                        String[] itemArr = line.split("\\,");
+                        Main.items.add(new Item(itemArr[0], itemArr[1], Integer.parseInt(itemArr[2]),
+                                Double.parseDouble(itemArr[3]), Double.parseDouble(itemArr[4]), Integer.parseInt(itemArr[5]),
+                                Integer.parseInt(itemArr[6]), Integer.parseInt(itemArr[7]),
+                                Integer.parseInt(itemArr[8]), Integer.parseInt(itemArr[9]), Integer.parseInt(itemArr[10]),
+                                Integer.parseInt(itemArr[11]), Integer.parseInt(itemArr[12]), itemArr[13], itemArr[14], itemArr[15]));
+                    }
+                    listedReader.close();
+                    System.out.print("scraping done (thread)");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+
+                }
         DiningHall hall = new DiningHall(diningHall);
         user.meals[mealNumber-1].diningHall=hall.name;
         mealScreen = new JPanel();
@@ -1439,6 +1489,7 @@ public class Main extends JComponent implements Runnable{
         int items = 0;
 
         for(Item item : hall.entrees){
+            System.out.println(item.location);
             if(item.location.split("-")[2].contains(meal)){
                 items++;
                 itemNames.add(item.name);

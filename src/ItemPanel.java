@@ -41,7 +41,15 @@ public class ItemPanel extends JPanel {
                 unit = item.serving.substring(i);
                 break;
             }
-        }portionsize = Double.parseDouble(toConvert);
+        }
+        try{
+            portionsize = Double.parseDouble(toConvert);
+        }catch(NumberFormatException e){
+            if(toConvert.indexOf('/') > -1){
+                portionsize = (int)toConvert.charAt(0) / (int)toConvert.charAt(2);
+
+            }
+        }
 
 
 
