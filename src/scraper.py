@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import re
 import sys
 
@@ -14,6 +15,20 @@ def check_for_less_than(s):
             s = "0"
     except:
         s = "0"
+=======
+from urllib.request import Request
+
+import requests
+from bs4 import BeautifulSoup as soup
+from urllib.request import Request, urlopen
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+
+def check_for_less_than(s):
+    if s[0] == '<':
+         s = "0"
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
     return s
 
 
@@ -80,6 +95,7 @@ def format_str(calories,info):
 
 
 def main():
+<<<<<<< HEAD
     url = (sys.argv[1])
     hall = (url[(url.index("menus/")+6):(url.index("menus/")+9)])
     if(hall == "Wil"):
@@ -104,6 +120,11 @@ def main():
     driver = webdriver.Safari()
     print(url)
     driver.get(url)
+=======
+    file = open("foods.txt","a")
+    driver = webdriver.Safari()
+    driver.get("https://dining.purdue.edu/menus/Ford/2023/3/20/Lunch")
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
     driver.back()
     elem = driver.find_elements(By.CLASS_NAME,"station-item")
     c = 0;
@@ -117,28 +138,46 @@ def main():
                 break
 
         print(name)
+<<<<<<< HEAD
         station = (elem[c].find_element(By.XPATH,'..').find_element(By.XPATH,'..').find_element(By.XPATH,'..').find_element(By.CLASS_NAME,'station-name').text)
         station = station.replace(",","")
         station = station.replace("-", "")
         name = name.replace(",","")
         if("Allergens Unavailable" in e.text):
             # file.write(name[0:name.index("Allergens")])
+=======
+        print(e.get_attribute('href'))
+        if("Allergens Unavailable" in e.text):
+           # file.write(name[0:name.index("Allergens")])
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
             print("No info avalible\n\n")
             driver.implicitly_wait(50)
             c = c+1
             continue
+<<<<<<< HEAD
+=======
+        file.write(name)
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
         item = elem[c]
         driver.get(item.get_attribute("href"))
         driver.implicitly_wait(50)
         item = driver.find_element(By.CLASS_NAME, "nutrition-table")
+<<<<<<< HEAD
         print(item.text)
+=======
+        print("CALS", driver.find_element(By.CLASS_NAME, "nutrition-feature-calories").text)
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
         if("CholesterolSodium" in item.text):
             print("No info avalible\n\n")
             c = c + 1
             driver.back()
             driver.back()
             continue
+<<<<<<< HEAD
         file.write(name)
+=======
+
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
         formatted = format_str(driver.find_element(By.CLASS_NAME, "nutrition-feature-calories").text,item.text)
         print("INFO", item.text)
         file.write(formatted)
@@ -146,6 +185,7 @@ def main():
             print("No info avalible 2\n\n")
             continue
         else:
+<<<<<<< HEAD
             if re.search("Ingredients",(driver.find_element(By.CLASS_NAME, "item-widget").text)) != None:
 
                 ing_str = str(driver.find_element(By.CLASS_NAME, "nutrition-ingredient-list").text)
@@ -162,6 +202,17 @@ def main():
                 file.write(name+",")
                 file.write(","+hall+"-" + station + "-"+meal)
 
+=======
+            ing_str = str(driver.find_element(By.CLASS_NAME, "nutrition-ingredient-list").text)
+            ing_str = ing_str.replace(", ",'-')
+            try:
+                print("index of comma "+ing_str.index(","))
+            except:
+                print("index -1")
+            print(ing_str)
+            file.write(ing_str)
+            file.write(",Ford-idk-l")
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
 
 
         file.write("\n")
@@ -176,7 +227,11 @@ def main():
     file.close()
     driver.close()
 
+<<<<<<< HEAD
     return 0
+=======
+    return 0;
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
 
 
 
@@ -184,3 +239,7 @@ def main():
 if __name__ == '__main__':
     main()
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> f446d8dcab0198c80e98c24f2d84a2cb45b08e14
