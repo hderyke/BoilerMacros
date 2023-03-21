@@ -889,34 +889,32 @@ public class Main extends JComponent implements Runnable{
     static User user;
 
     public static void main(String[] args) {
-   /*     try{
-            String pythonFileDirectory = "./src"; // replace with actual path
-            ProcessBuilder pb = new ProcessBuilder("python3", "scraper.py","https://dining.purdue.edu/menus/Hillenbrand/2023/3/20/Lunch");
-            pb.directory(new File(pythonFileDirectory));
-            Process process = pb.start();
-
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-*/
 
         try {
-            //adding food to item list
-            BufferedReader listedReader = new BufferedReader(new FileReader("storage/fooditems/listedfoods.txt"));
-            while (true) {
-                String line = listedReader.readLine();
-                if (line == null) {
-                    break;
+            if(readFiles().equals(LocalDateTime.now().toLocalDate().toString().substring(5))) {
+                //adding food to item list
+                BufferedReader listedReader = new BufferedReader(new FileReader("storage/fooditems/listedfoods.txt"));
+                while (true) {
+                    String line = listedReader.readLine();
+                    if (line == null) {
+                        break;
+                    }
+                    String[] itemArr = line.split("\\,");
+                    items.add(new Item(itemArr[0], itemArr[1], Integer.parseInt(itemArr[2]),
+                            Double.parseDouble(itemArr[3]), Double.parseDouble(itemArr[4]), Integer.parseInt(itemArr[5]),
+                            Integer.parseInt(itemArr[6]), Integer.parseInt(itemArr[7]),
+                            Integer.parseInt(itemArr[8]), Integer.parseInt(itemArr[9]), Integer.parseInt(itemArr[10]),
+                            Integer.parseInt(itemArr[11]), Integer.parseInt(itemArr[12]), itemArr[13], itemArr[14], itemArr[15]));
                 }
-                String[] itemArr = line.split("\\,");
-                items.add(new Item(itemArr[0], itemArr[1], Integer.parseInt(itemArr[2]),
-                        Double.parseDouble(itemArr[3]), Double.parseDouble(itemArr[4]), Integer.parseInt(itemArr[5]),
-                        Integer.parseInt(itemArr[6]), Integer.parseInt(itemArr[7]),
-                        Integer.parseInt(itemArr[8]), Integer.parseInt(itemArr[9]), Integer.parseInt(itemArr[10]),
-                        Integer.parseInt(itemArr[11]), Integer.parseInt(itemArr[12]), itemArr[13], itemArr[14], itemArr[15]));
+                listedReader.close();
+            }else{
+                PrintWriter listedWriter = new PrintWriter(new FileWriter("storage/fooditems/listedfoods.txt"));
+                listedWriter.print("");
+                listedWriter.flush();
+                listedWriter.close();
+                user.meals = null;
+                writeFiles();
             }
-            listedReader.close();
 
             BufferedReader unlistedReader = new BufferedReader(new FileReader("storage/fooditems/unlistedfoods.txt"));
             while (true) {
@@ -935,7 +933,6 @@ public class Main extends JComponent implements Runnable{
         }catch (Exception e){
             e.printStackTrace();
         }
-        readFiles();
             SwingUtilities.invokeLater(new Main());
 
     }
@@ -1717,10 +1714,10 @@ public class Main extends JComponent implements Runnable{
        content.repaint();
     }
 
-    public void writeFiles(){
+    public static void writeFiles(){
         try {
             PrintWriter userWriter = new PrintWriter(new FileWriter("storage/UserInfo.txt"));
-            userWriter.println(user.name);
+            userWriter.println(user.name+","+LocalDateTime.now().toLocalDate().toString().substring(5));
             userWriter.println(user.preferences.toString());
             for(int i = 0; i < 3; i++){
                 try {
@@ -1742,7 +1739,7 @@ public class Main extends JComponent implements Runnable{
 
     }
 
-    public static void readFiles(){
+    public static String readFiles(){
         try {
             //read user info
             BufferedReader userReader = new BufferedReader(new FileReader("storage/UserInfo.txt"));
@@ -1750,12 +1747,13 @@ public class Main extends JComponent implements Runnable{
             String preferences = userReader.readLine();
             String meals = userReader.readLine();
             userReader.close();
-
-            user = new User(name, preferences, meals);
+            user = new User(name.split("\\,")[0], preferences, meals);
+            return name.split("\\,")[1];
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
 
     }
 
